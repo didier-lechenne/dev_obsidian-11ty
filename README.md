@@ -39,8 +39,6 @@ Du texte avec {% image "image.jpg" %} une image intégrée
 
 ### Options disponibles
 
-Toutes les options CSS de 11ty sont supportées :
-
 ```javascript
 {
   width: 3,                     // Largeur
@@ -55,8 +53,8 @@ Toutes les options CSS de 11ty sont supportées :
   imgW: 0,                      // Largeur de l'image
   page: "full",                 // Page complète
   caption: "**Ma légende**",    // Légende (Markdown supporté)
-  class: "myClass",            // Classes CSS
-  poster: "./images/poster.jpg"          // Poster pour vidéos
+  class: "myClass",             // Classes CSS
+  poster: "poster.jpg"          // Poster pour vidéos
 }
 ```
 
