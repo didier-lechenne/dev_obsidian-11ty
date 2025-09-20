@@ -35,6 +35,29 @@ export class ShortcodeRenderer {
 		}
 	}
 
+	private addEditOnClick(element: HTMLElement): void {
+		element.style.cursor = 'pointer';
+		element.addEventListener('click', (event) => {
+			event.preventDefault();
+			event.stopPropagation();
+			
+			const editButton = this.findEditButton(element);
+			if (editButton) {
+				editButton.click();
+			}
+		});
+	}
+
+	private findEditButton(element: HTMLElement): HTMLElement | null {
+		let parent = element.parentElement;
+		while (parent) {
+			const editButton = parent.querySelector('.edit-block-button') as HTMLElement;
+			if (editButton) return editButton;
+			parent = parent.parentElement;
+		}
+		return null;
+	}
+
 	private resolveImagePath(src: string | undefined): string {
 		if (!src) return '';
 		
@@ -63,6 +86,9 @@ export class ShortcodeRenderer {
 		figure.id = `image-${this.globalElementCounter}`;
 		figure.className = `figure image${config.class ? ' ' + config.class : ''}`;
 		
+		// Ajouter le listener de clic pour édition
+		this.addEditOnClick(figure);
+		
 		const img = document.createElement('img');
 		img.src = config.src || '';
 		img.alt = cleanAlt(config.caption || '');
@@ -90,6 +116,8 @@ export class ShortcodeRenderer {
 		figure.id = `figure-${this.globalElementCounter}`;
 		figure.className = config.class || '';
 		
+		this.addEditOnClick(figure);
+		
 		const img = document.createElement('img');
 		img.src = config.src || '';
 		img.alt = cleanAlt(config.caption || '');
@@ -116,6 +144,8 @@ export class ShortcodeRenderer {
 		const figure = document.createElement('figure');
 		figure.className = `video${config.class ? ' ' + config.class : ''}`;
 		figure.setAttribute('data-grid', 'content');
+		
+		this.addEditOnClick(figure);
 		
 		const video = document.createElement('video');
 		video.controls = true;
@@ -163,6 +193,8 @@ export class ShortcodeRenderer {
 		spanFig.setAttribute('data-grid', 'image');
 		spanFig.id = `fig-${this.globalElementCounter}`;
 		
+		this.addEditOnClick(spanFig);
+		
 		const img = document.createElement('img');
 		img.src = config.src || '';
 		img.alt = cleanAlt(config.caption || '');
@@ -197,6 +229,8 @@ export class ShortcodeRenderer {
 		span.setAttribute('data-src', config.src || '');
 		span.setAttribute('data-grid', 'image');
 		
+		this.addEditOnClick(span);
+		
 		const img = document.createElement('img');
 		img.src = config.src || '';
 		img.alt = cleanAlt(config.caption || '');
@@ -223,6 +257,8 @@ export class ShortcodeRenderer {
 		figure.setAttribute('data-grid', 'image');
 		figure.id = `figure-${this.globalElementCounter}`;
 		figure.className = `full-page${config.class ? ' ' + config.class : ''}`;
+		
+		this.addEditOnClick(figure);
 		
 		const img = document.createElement('img');
 		img.src = config.src || '';
