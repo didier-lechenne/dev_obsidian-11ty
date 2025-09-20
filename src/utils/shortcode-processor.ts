@@ -1,4 +1,4 @@
-import { MarkdownPostProcessorContext } from 'obsidian';
+import { App, MarkdownPostProcessorContext } from 'obsidian';
 import { ShortcodeRenderer } from './shortcode-renderer';
 import { parseShortcodeParams } from './helpers';
 import { SHORTCODE_REGEX } from './constants';
@@ -6,32 +6,59 @@ import { SHORTCODE_REGEX } from './constants';
 export class ShortcodeProcessor {
 	private renderer: ShortcodeRenderer;
 
-	constructor() {
-		this.renderer = new ShortcodeRenderer();
+	constructor(private app: App) {
+		this.renderer = new ShortcodeRenderer(app);
+	}
+
+	// Pour les code blocks (Live Preview)
+	processCodeBlock(source: string, el: HTMLElement, ctx: any): void {
+		// Parser directement le contenu du shortcode 11ty
+		const shortcodeMatch = source.match(/\{%\s*(\w+)\s+([^%]+)\s*%\}/);
+		if (!shortcodeMatch) {
+			console.warn('Format shortcode invalide dans code block');
+			return;
+		}
+		
+		const [, shortcodeType, params] = shortcodeMatch;
+		
+		try {
+			const parsedParams = parseShortcodeParams(params);
+			const htmlElement = this.renderer.render(shortcodeType, parsedParams);
+			if (htmlElement) {
+				el.appendChild(htmlElement);
+			}
+		} catch (error) {
+			console.error('Erreur parsing shortcode:', error);
+		}
 	}
 
 	processElement(element: HTMLElement, context: MarkdownPostProcessorContext) {
-		const walker = document.createTreeWalker(
-			element,
-			NodeFilter.SHOW_TEXT,
-			null
-		);
+		console.log('Processing element:', element);
+		
+		// Traiter tous les nœuds, y compris dans les paragraphes
+		this.processNodeRecursively(element);
+	}
 
-		const textNodes: Text[] = [];
-		let node;
-		while (node = walker.nextNode()) {
-			if (node.textContent && this.containsShortcode(node.textContent)) {
-				textNodes.push(node as Text);
+	private processNodeRecursively(node: Node) {
+		if (node.nodeType === Node.TEXT_NODE) {
+			const textNode = node as Text;
+			if (textNode.textContent && this.containsShortcode(textNode.textContent)) {
+				this.processTextNode(textNode);
+				return;
 			}
 		}
-
-		textNodes.forEach(textNode => {
-			this.processTextNode(textNode);
-		});
+		
+		// Traiter les enfants
+		const children = Array.from(node.childNodes);
+		children.forEach(child => this.processNodeRecursively(child));
 	}
 
 	private containsShortcode(text: string): boolean {
-		return /\{%.*%\}/.test(text);
+		const hasShortcode = /\{%.*%\}/.test(text);
+		if (hasShortcode) {
+			console.log('Found shortcode in text:', text);
+		}
+		return hasShortcode;
 	}
 
 	private processTextNode(textNode: Text) {
