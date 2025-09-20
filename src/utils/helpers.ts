@@ -34,9 +34,11 @@ export function cleanAlt(caption: string): string {
 
 export function renderMarkdown(text: string): string {
 	return text
+		.replace(/~~(.*?)~~/g, '<del>$1</del>')
 		.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
 		.replace(/\*(.*?)\*/g, '<em>$1</em>')
-		.replace(/`(.*?)`/g, '<code>$1</code>');
+		.replace(/`(.*?)`/g, '<code>$1</code>')
+		.replace(/<br>/g, '<br>');
 }
 
 export function parseShortcodeParams(params: string): { src?: string; options: ShortcodeConfig } {

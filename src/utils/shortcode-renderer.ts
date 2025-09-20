@@ -1,7 +1,7 @@
 import { App } from 'obsidian';
 import { ShortcodeConfig, ShortcodeType } from '../types';
-import { applyStyles, cleanAlt, renderMarkdown } from './helpers';
-import { SUPPORTED_SHORTCODE_TYPES } from './constants';
+import { applyStyles, cleanAlt, renderMarkdown, generateStyles } from './helpers';
+import { SUPPORTED_SHORTCODE_TYPES, MEDIA_TEMPLATES } from './constants';
 
 export class ShortcodeRenderer {
 	private globalElementCounter = 0;
@@ -16,23 +16,80 @@ export class ShortcodeRenderer {
 
 		const { src, options = {} } = params;
 		const config = { src: this.resolveImagePath(src), ...options };
+		
+		this.globalElementCounter++;
+		
+		const template = MEDIA_TEMPLATES[type as keyof typeof MEDIA_TEMPLATES];
+		if (!template) return null;
 
-		switch (type as ShortcodeType) {
-			case 'image':
-				return this.createImageElement(config);
-			case 'grid':
-				return this.createGridElement(config);
-			case 'video':
-				return this.createVideoElement(config);
-			case 'figure':
-				return this.createFigureElement(config);
-			case 'imagenote':
-				return this.createImageNoteElement(config);
-			case 'fullpage':
-				return this.createFullPageElement(config);
-			default:
-				return null;
+		const templateData = {
+			id: config.id || `${type}-${this.globalElementCounter}`,
+			type: type,
+			classes: config.class || '',
+			src: config.src || '',
+			media: this.createMediaElement(type, config),
+			caption: config.caption ? renderMarkdown(config.caption) : '',
+			styles: this.generateStylesString(config)
+		};
+
+		const htmlString = this.renderTemplate(template.template, templateData);
+		const tempDiv = document.createElement('div');
+		tempDiv.innerHTML = htmlString;
+		
+		const element = tempDiv.firstElementChild as HTMLElement;
+		if (element) {
+			this.addEditOnClick(element);
+			
+			// Pour grid, gérer la structure multiple
+			if (type === 'grid' && tempDiv.children.length > 1) {
+				const wrapper = document.createElement('div');
+				Array.from(tempDiv.children).forEach(child => wrapper.appendChild(child));
+				return wrapper;
+			}
 		}
+		
+		return element;
+	}
+
+	private resolveImagePath(src: string | undefined): string {
+		if (!src) return '';
+		
+		if (src.startsWith('http') || src.startsWith('app://')) {
+			return src;
+		}
+		
+		const file = this.app.metadataCache.getFirstLinkpathDest(src, '');
+		if (file) {
+			return this.app.vault.getResourcePath(file);
+		}
+		
+		return `app://local/${encodeURIComponent(src)}`;
+	}
+
+	private renderTemplate(template: string, data: Record<string, string>): string {
+		return template
+			.replace(/{id}/g, data.id)
+			.replace(/{type}/g, data.type)
+			.replace(/{classes}/g, data.classes)
+			.replace(/{src}/g, data.src)
+			.replace(/{media}/g, data.media)
+			.replace(/{caption}/g, data.caption)
+			.replace(/{styles}/g, data.styles);
+	}
+
+	private createMediaElement(type: string, config: ShortcodeConfig): string {
+		if (type === 'video') {
+			const posterAttr = config.poster ? ` poster="${config.poster}"` : '';
+			return `<video controls${posterAttr}><source src="${config.src}"></video>`;
+		}
+		
+		return `<img src="${config.src}" alt="${cleanAlt(config.caption || '')}">`;
+	}
+
+	private generateStylesString(config: ShortcodeConfig): string {
+		const styles = generateStyles(config);
+		const styleArray = Object.entries(styles).map(([prop, value]) => `${prop}: ${value}`);
+		return styleArray.length > 0 ? ` style="${styleArray.join('; ')}"` : '';
 	}
 
 	private addEditOnClick(element: HTMLElement): void {
@@ -56,216 +113,5 @@ export class ShortcodeRenderer {
 			parent = parent.parentElement;
 		}
 		return null;
-	}
-
-	private resolveImagePath(src: string | undefined): string {
-		if (!src) return '';
-		
-		// Si c'est déjà une URL complète, on la garde
-		if (src.startsWith('http') || src.startsWith('app://')) {
-			return src;
-		}
-		
-		// Utiliser l'API Obsidian pour résoudre le chemin
-		const file = this.app.metadataCache.getFirstLinkpathDest(src, '');
-		if (file) {
-			return this.app.vault.getResourcePath(file);
-		}
-		
-		// Fallback
-		return `app://local/${encodeURIComponent(src)}`;
-	}
-
-	private createImageElement(config: ShortcodeConfig): HTMLElement {
-		this.globalElementCounter++;
-		
-		const figure = document.createElement('figure');
-		figure.setAttribute('data-id', config.id || '');
-		figure.setAttribute('data-src', config.src || '');
-		figure.setAttribute('data-grid', 'image');
-		figure.id = `image-${this.globalElementCounter}`;
-		figure.className = `figure image${config.class ? ' ' + config.class : ''}`;
-		
-		// Ajouter le listener de clic pour édition
-		this.addEditOnClick(figure);
-		
-		const img = document.createElement('img');
-		img.src = config.src || '';
-		img.alt = cleanAlt(config.caption || '');
-		
-		figure.appendChild(img);
-		
-		if (config.caption) {
-			const figcaption = document.createElement('figcaption');
-			figcaption.className = 'figcaption';
-			figcaption.innerHTML = renderMarkdown(config.caption);
-			figure.appendChild(figcaption);
-		}
-		
-		applyStyles(figure, config);
-		return figure;
-	}
-
-	private createGridElement(config: ShortcodeConfig): HTMLElement {
-		this.globalElementCounter++;
-		
-		const figure = document.createElement('figure');
-		figure.setAttribute('data-id', config.id || '');
-		figure.setAttribute('data-src', config.src || '');
-		figure.setAttribute('data-grid', 'image');
-		figure.id = `figure-${this.globalElementCounter}`;
-		figure.className = config.class || '';
-		
-		this.addEditOnClick(figure);
-		
-		const img = document.createElement('img');
-		img.src = config.src || '';
-		img.alt = cleanAlt(config.caption || '');
-		
-		figure.appendChild(img);
-		applyStyles(figure, config);
-		
-		if (config.caption) {
-			const figcaption = document.createElement('figcaption');
-			figcaption.className = `figcaption figcaption-${this.globalElementCounter}`;
-			figcaption.innerHTML = renderMarkdown(config.caption);
-			applyStyles(figcaption, config);
-			
-			const wrapper = document.createElement('div');
-			wrapper.appendChild(figure);
-			wrapper.appendChild(figcaption);
-			return wrapper;
-		}
-		
-		return figure;
-	}
-
-	private createVideoElement(config: ShortcodeConfig): HTMLElement {
-		const figure = document.createElement('figure');
-		figure.className = `video${config.class ? ' ' + config.class : ''}`;
-		figure.setAttribute('data-grid', 'content');
-		
-		this.addEditOnClick(figure);
-		
-		const video = document.createElement('video');
-		video.controls = true;
-		if (config.poster) {
-			video.poster = config.poster;
-		}
-		
-		const source = document.createElement('source');
-		source.src = config.src || '';
-		video.appendChild(source);
-		
-		figure.appendChild(video);
-		
-		if (config.caption) {
-			const figcaption = document.createElement('figcaption');
-			figcaption.className = 'figcaption';
-			figcaption.innerHTML = renderMarkdown(config.caption);
-			figure.appendChild(figcaption);
-		}
-		
-		applyStyles(figure, config);
-		return figure;
-	}
-
-	private createFigureElement(config: ShortcodeConfig): HTMLElement {
-		this.globalElementCounter++;
-		
-		const wrapper = document.createElement('div');
-		
-		const spanCall = document.createElement('span');
-		spanCall.className = 'spanMove figure_call';
-		spanCall.id = `fig-${this.globalElementCounter}-call`;
-		
-		const link = document.createElement('a');
-		link.href = `#fig-${this.globalElementCounter}`;
-		link.textContent = `fig. ${this.globalElementCounter}`;
-		
-		spanCall.appendChild(document.createTextNode('['));
-		spanCall.appendChild(link);
-		spanCall.appendChild(document.createTextNode(']'));
-		
-		const spanFig = document.createElement('span');
-		spanFig.className = `figure figmove${config.class ? ' ' + config.class : ''}`;
-		spanFig.setAttribute('data-src', config.src || '');
-		spanFig.setAttribute('data-grid', 'image');
-		spanFig.id = `fig-${this.globalElementCounter}`;
-		
-		this.addEditOnClick(spanFig);
-		
-		const img = document.createElement('img');
-		img.src = config.src || '';
-		img.alt = cleanAlt(config.caption || '');
-		
-		spanFig.appendChild(img);
-		
-		if (config.caption) {
-			const captionSpan = document.createElement('span');
-			captionSpan.className = 'figcaption';
-			
-			const refSpan = document.createElement('span');
-			refSpan.className = 'figure_reference';
-			refSpan.textContent = `[fig. ${this.globalElementCounter}]`;
-			
-			captionSpan.appendChild(refSpan);
-			captionSpan.appendChild(document.createTextNode(' '));
-			captionSpan.innerHTML += renderMarkdown(config.caption);
-			
-			spanFig.appendChild(captionSpan);
-		}
-		
-		applyStyles(spanFig, config);
-		
-		wrapper.appendChild(spanCall);
-		wrapper.appendChild(spanFig);
-		return wrapper;
-	}
-
-	private createImageNoteElement(config: ShortcodeConfig): HTMLElement {
-		const span = document.createElement('span');
-		span.className = `imagenote sideNote${config.class ? ' ' + config.class : ''}`;
-		span.setAttribute('data-src', config.src || '');
-		span.setAttribute('data-grid', 'image');
-		
-		this.addEditOnClick(span);
-		
-		const img = document.createElement('img');
-		img.src = config.src || '';
-		img.alt = cleanAlt(config.caption || '');
-		
-		span.appendChild(img);
-		
-		if (config.caption) {
-			const captionSpan = document.createElement('span');
-			captionSpan.className = 'caption';
-			captionSpan.innerHTML = renderMarkdown(config.caption);
-			span.appendChild(captionSpan);
-		}
-		
-		applyStyles(span, config);
-		return span;
-	}
-
-	private createFullPageElement(config: ShortcodeConfig): HTMLElement {
-		this.globalElementCounter++;
-		
-		const figure = document.createElement('figure');
-		figure.setAttribute('data-id', config.id || '');
-		figure.setAttribute('data-src', config.src || '');
-		figure.setAttribute('data-grid', 'image');
-		figure.id = `figure-${this.globalElementCounter}`;
-		figure.className = `full-page${config.class ? ' ' + config.class : ''}`;
-		
-		this.addEditOnClick(figure);
-		
-		const img = document.createElement('img');
-		img.src = config.src || '';
-		img.alt = cleanAlt(config.caption || '');
-		
-		figure.appendChild(img);
-		applyStyles(figure, config);
-		return figure;
 	}
 }

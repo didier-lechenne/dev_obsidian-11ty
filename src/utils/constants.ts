@@ -26,3 +26,24 @@ export const SUPPORTED_SHORTCODE_TYPES = [
 	'imagenote',
 	'fullpage'
 ] as const;
+
+export const MEDIA_TEMPLATES = {
+	image: {
+		template: '<figure id="{id}" data-type="{type}" data-grid="image" class="figure {type} {classes}" data-src="{src}"{styles}>{media}<figcaption class="figcaption">{caption}</figcaption></figure>'
+	},
+	imagenote: {
+		template: '<span id="{id}" data-type="{type}" class="{type} {classes}" data-src="{src}"{styles}>{media}<span class="figcaption">{caption}</span></span>'
+	},
+	figure: {
+		template: '<figure id="{id}" data-src="{src}" data-type="{type}" data-grid="image" class="{type} {classes}"{styles}>{media}<figcaption class="figcaption">{caption}</figcaption></figure>'
+	},
+	grid: {
+		template: '<figure id="{id}" data-src="{src}" data-type="{type}" data-grid="image" class="figure {type} {classes}"{styles}>{media}</figure><figcaption class="figcaption"{styles}>{caption}</figcaption>'
+	},
+	fullpage: {
+		template: '<figure id="{id}" data-src="{src}" data-type="{type}" data-grid="image" class="full-page figure {type} {classes}"{styles}>{media}</figure>'
+	},
+	video: {
+		template: '<figure id="{id}" data-type="{type}" data-grid="content" class="video {classes}"{styles}>{media}<figcaption class="figcaption">{caption}</figcaption></figure>'
+	}
+};
