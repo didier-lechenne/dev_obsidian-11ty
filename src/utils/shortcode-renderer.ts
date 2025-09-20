@@ -1,9 +1,12 @@
+import { App } from 'obsidian';
 import { ShortcodeConfig, ShortcodeType } from '../types';
 import { applyStyles, cleanAlt, renderMarkdown } from './helpers';
 import { SUPPORTED_SHORTCODE_TYPES } from './constants';
 
 export class ShortcodeRenderer {
 	private globalElementCounter = 0;
+
+	constructor(private app: App) {}
 
 	render(type: string, params: { src?: string; options: ShortcodeConfig }): HTMLElement | null {
 		if (!SUPPORTED_SHORTCODE_TYPES.includes(type as ShortcodeType)) {
@@ -12,7 +15,7 @@ export class ShortcodeRenderer {
 		}
 
 		const { src, options = {} } = params;
-		const config = { src, ...options };
+		const config = { src: this.resolveImagePath(src), ...options };
 
 		switch (type as ShortcodeType) {
 			case 'image':
@@ -30,6 +33,24 @@ export class ShortcodeRenderer {
 			default:
 				return null;
 		}
+	}
+
+	private resolveImagePath(src: string | undefined): string {
+		if (!src) return '';
+		
+		// Si c'est déjà une URL complète, on la garde
+		if (src.startsWith('http') || src.startsWith('app://')) {
+			return src;
+		}
+		
+		// Utiliser l'API Obsidian pour résoudre le chemin
+		const file = this.app.metadataCache.getFirstLinkpathDest(src, '');
+		if (file) {
+			return this.app.vault.getResourcePath(file);
+		}
+		
+		// Fallback
+		return `app://local/${encodeURIComponent(src)}`;
 	}
 
 	private createImageElement(config: ShortcodeConfig): HTMLElement {
