@@ -16,13 +16,17 @@ Un plugin Obsidian qui permet d'utiliser des shortcodes 11ty (Eleventy) directem
 ### Syntaxes supportées
 
 1. **Syntaxe 11ty classique** (dans code blocks `11ty`)
-```11ty
-{% image "image.jpg", {width: 300, col: 2} %}
+```
+    ```11ty
+    {% image "image.jpg", {width: 300, col: 2} %}
+    ```
 ```
 
 2. **Code blocks spécifiques** (Live Preview)
-```image
-"image.jpg", {width: 300, caption: "Ma légende"}
+```
+    ```image
+    "image.jpg", {width: 300, caption: "Ma légende"}
+    ```
 ```
 
 3. **Shortcodes inline** (Reading View)
