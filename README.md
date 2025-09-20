@@ -16,13 +16,17 @@ Un plugin Obsidian qui permet d'utiliser des shortcodes 11ty (Eleventy) directem
 ### Syntaxes supportées
 
 1. **Syntaxe 11ty classique** (dans code blocks `11ty`)
-```11ty
-{% image "image.jpg", {width: 300, col: 2} %}
+```
+    ```11ty
+    {% image "image.jpg", {width: 300, col: 2} %}
+    ```
 ```
 
 2. **Code blocks spécifiques** (Live Preview)
-```image
-"image.jpg", {width: 300, caption: "Ma légende"}
+```
+    ```image
+    "image.jpg", {width: 300, caption: "Ma légende"}
+    ```
 ```
 
 3. **Shortcodes inline** (Reading View)
@@ -39,8 +43,6 @@ Du texte avec {% image "image.jpg" %} une image intégrée
 
 ### Options disponibles
 
-Toutes les options CSS de 11ty sont supportées :
-
 ```javascript
 {
   width: 3,                     // Largeur
@@ -55,8 +57,8 @@ Toutes les options CSS de 11ty sont supportées :
   imgW: 0,                      // Largeur de l'image
   page: "full",                 // Page complète
   caption: "**Ma légende**",    // Légende (Markdown supporté)
-  class: "myClass",            // Classes CSS
-  poster: "./images/poster.jpg"          // Poster pour vidéos
+  class: "myClass",             // Classes CSS
+  poster: "poster.jpg"          // Poster pour vidéos
 }
 ```
 
@@ -95,5 +97,4 @@ src/
 ## Compatibilité
 
 - Obsidian 0.15.0+
-
 
