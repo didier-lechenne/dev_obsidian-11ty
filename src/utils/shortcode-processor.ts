@@ -24,29 +24,9 @@ export class ShortcodeProcessor {
 			}
 		}
 		
-		if (type && type !== 'shortcode') {
-			// Format simple pour blocks spécifiques
-			let src = '';
-			let options = {};
-			
-			if (source.trim()) {
-				try {
-					const parsed = parseShortcodeParams(source.trim());
-					src = parsed.src || '';
-					options = parsed.options;
-				} catch (e) {
-					src = source.trim().replace(/['"]/g, '');
-				}
-			}
-			
-			const htmlElement = this.renderer.render(type, { src, options });
-			if (htmlElement) {
-				el.appendChild(htmlElement);
-			}
-			return;
-		}
+
 		
-		// Cas 2: block shortcode avec syntaxe 11ty
+		// block shortcode avec syntaxe 11ty
 		const shortcodeMatch = source.match(/\{%\s*(\w+)\s+([^%]+)\s*%\}/);
 		if (!shortcodeMatch) {
 			console.warn('Format shortcode invalide dans code block');
