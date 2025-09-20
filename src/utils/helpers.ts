@@ -40,11 +40,33 @@ export function renderMarkdown(text: string): string {
 }
 
 export function parseShortcodeParams(params: string): { src?: string; options: ShortcodeConfig } {
-	params = params.trim();
+	// Nettoyer les sauts de ligne et espaces multiples
+	params = params.replace(/\s+/g, ' ').trim();
 	
-	const match = params.match(/^["']([^"']+)["'](?:\s*,\s*(\{.*\}))?$/);
+	// Regex plus flexible pour gérer différents formats
+	const match = params.match(/^["']([^"']+)["'](?:\s*,\s*(\{.*\}))?$/) ||
+	              params.match(/^([^,\s]+)(?:\s*,\s*(\{.*\}))?$/);
 	
 	if (!match) {
+		// Fallback: prendre tout avant la première virgule comme src
+		const commaIndex = params.indexOf(',');
+		if (commaIndex > 0) {
+			const src = params.substring(0, commaIndex).trim().replace(/^["']|["']$/g, '');
+			const optionsStr = params.substring(commaIndex + 1).trim();
+			
+			let options: ShortcodeConfig = {};
+			if (optionsStr.startsWith('{')) {
+				try {
+					const cleanOptions = optionsStr.replace(/,(\s*[}\]])/g, '$1');
+					options = Function(`"use strict"; return (${cleanOptions})`)();
+				} catch (e) {
+					console.warn('Erreur parsing options:', e);
+				}
+			}
+			
+			return { src, options };
+		}
+		
 		throw new Error('Format de paramètres invalide');
 	}
 
