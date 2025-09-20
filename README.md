@@ -36,7 +36,9 @@ Du texte avec {% image "image.jpg" %} une image intégrée
 
 ## Installation
 
-1. Utiliser BRAT
+1. Installez [BRAT](https://github.com/TfTHacker/obsidian42-brat) depuis la communauté des plugins
+2. Utilisez BRAT pour installer ce plugin depuis son repository GitHub
+3. Activez le plugin dans Paramètres → Plugins communautaires
 
 
 ## Utilisation
@@ -46,9 +48,9 @@ Du texte avec {% image "image.jpg" %} une image intégrée
 ```javascript
 {
   width: 3,                     // Largeur
-  col: 2,                       // Position dans la grille
+  col: 2,                       // Position 
   printCol: 1,                  // Position impression
-  printWidth: 1,                // Largeur impression
+  printWidth: 1,                // Largeur 
   printRow: 2,                  // Ligne impression
   printHeight: 3,               // Hauteur impression
   alignSelf: "bottom",          // Alignement vertical
@@ -61,6 +63,8 @@ Du texte avec {% image "image.jpg" %} une image intégrée
   poster: "poster.jpg"          // Poster pour vidéos
 }
 ```
+
+
 
 ### Exemples
 
@@ -97,4 +101,3 @@ src/
 ## Compatibilité
 
 - Obsidian 0.15.0+
-
