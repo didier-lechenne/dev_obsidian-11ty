@@ -25,7 +25,7 @@ export default class Obsidian11tyPlugin extends Plugin {
 		this.registerMarkdownCodeBlockProcessor("fullpage", this.processor.processCodeBlock.bind(this.processor));
 		
 		// Code block générique pour syntaxe 11ty
-		this.registerMarkdownCodeBlockProcessor("shortcode", this.processor.processCodeBlock.bind(this.processor));
+		this.registerMarkdownCodeBlockProcessor("11ty", this.processor.processCodeBlock.bind(this.processor));
 		
 		// Post-processor pour Reading View
 		this.registerMarkdownPostProcessor((element, context) => {
