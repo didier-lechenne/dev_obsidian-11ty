@@ -18,11 +18,9 @@ export default class Obsidian11tyPlugin extends Plugin {
 		
 		// Code blocks individuels pour Live Preview
 		this.registerMarkdownCodeBlockProcessor("image", this.processor.processCodeBlock.bind(this.processor));
-		this.registerMarkdownCodeBlockProcessor("grid", this.processor.processCodeBlock.bind(this.processor));
 		this.registerMarkdownCodeBlockProcessor("video", this.processor.processCodeBlock.bind(this.processor));
 		this.registerMarkdownCodeBlockProcessor("figure", this.processor.processCodeBlock.bind(this.processor));
 		this.registerMarkdownCodeBlockProcessor("imagenote", this.processor.processCodeBlock.bind(this.processor));
-		this.registerMarkdownCodeBlockProcessor("fullpage", this.processor.processCodeBlock.bind(this.processor));
 		
 		// Code block générique pour syntaxe 11ty
 		this.registerMarkdownCodeBlockProcessor("11ty", this.processor.processCodeBlock.bind(this.processor));
