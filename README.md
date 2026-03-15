@@ -101,3 +101,4 @@ src/
 ## Compatibilité
 
 - Obsidian 0.15.0+
+
