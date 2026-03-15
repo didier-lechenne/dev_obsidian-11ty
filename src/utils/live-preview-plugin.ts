@@ -71,8 +71,7 @@ export function createShortcodeViewPlugin(renderer: ShortcodeRenderer) {
 					if (renderCache.has(source)) {
 						const html = renderCache.get(source)!;
 						builder.add(from, to, Decoration.replace({
-							widget: new ShortcodeWidget(html),
-							block: true
+							widget: new ShortcodeWidget(html)
 						}));
 					} else if (!pending.has(source)) {
 						pending.add(source);
