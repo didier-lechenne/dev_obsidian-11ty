@@ -1,12 +1,111 @@
-import { App } from 'obsidian';
+import { App, TFile, MarkdownRenderer, Component } from 'obsidian';
 import { ShortcodeConfig, ShortcodeType } from '../types';
-import { applyStyles, cleanAlt, renderMarkdown, generateStyles } from './helpers';
-import { SUPPORTED_SHORTCODE_TYPES, MEDIA_TEMPLATES } from './constants';
+import { applyStyles, cleanAlt, renderMarkdown, generateStyles, parseShortcodeParams } from './helpers';
+import { SUPPORTED_SHORTCODE_TYPES, MEDIA_TEMPLATES, SHORTCODE_REGEX } from './constants';
 
 export class ShortcodeRenderer {
 	private globalElementCounter = 0;
 
 	constructor(private app: App) {}
+
+	// Rend un shortcode enfant (sync ou async selon le type)
+	private async renderInnerShortcode(innerType: string, innerParams: string): Promise<HTMLElement | null> {
+		const parsedParams = parseShortcodeParams(innerParams.trim());
+		if (innerType === 'markdown' || innerType === 'textCol') {
+			return this.renderMarkdownFile(innerType, parsedParams);
+		}
+		return this.render(innerType, parsedParams);
+	}
+
+	// Shortcodes appairés : gallery, columnGrid
+	async renderPaired(type: string, params: { src?: string; options: ShortcodeConfig }, innerContent: string): Promise<HTMLElement | null> {
+		const { options = {} } = params;
+		const classAttr = (options as Record<string, unknown>).class as string || '';
+
+		if (type === 'gallery') {
+			const figure = document.createElement('figure');
+			figure.setAttribute('data-type', 'gallery');
+			figure.className = `marker gallery${classAttr ? ' ' + classAttr : ''}`;
+
+			const grid = document.createElement('div');
+			grid.className = 'gallery-grid marker';
+
+			const innerRegex = new RegExp(SHORTCODE_REGEX.source, 'g');
+			let match;
+			while ((match = innerRegex.exec(innerContent)) !== null) {
+				const [, innerType, innerParams] = match;
+				try {
+					const el = await this.renderInnerShortcode(innerType, innerParams);
+					if (el) {
+						const item = document.createElement('div');
+						item.className = 'gallery-item';
+						item.appendChild(el);
+						grid.appendChild(item);
+					}
+				} catch (e) {
+					console.warn('Erreur rendu item gallery:', e);
+				}
+			}
+			figure.appendChild(grid);
+			return figure;
+		}
+
+		if (type === 'columnGrid') {
+			const wrapper = document.createElement('div');
+			wrapper.className = `marker columnGrid${classAttr ? ' ' + classAttr : ''}`;
+
+			const innerRegex = new RegExp(SHORTCODE_REGEX.source, 'g');
+			let match;
+			while ((match = innerRegex.exec(innerContent)) !== null) {
+				const [, innerType, innerParams] = match;
+				try {
+					const el = await this.renderInnerShortcode(innerType, innerParams);
+					if (el) wrapper.appendChild(el);
+				} catch (e) {
+					console.warn('Erreur rendu item columnGrid:', e);
+				}
+			}
+			return wrapper;
+		}
+
+		return null;
+	}
+
+	// Shortcodes qui lisent un fichier .md depuis le vault (markdown, textCol)
+	async renderMarkdownFile(type: string, params: { src?: string; options: ShortcodeConfig }): Promise<HTMLElement | null> {
+		const { src, options = {} } = params;
+		if (!src) return null;
+
+		const el = document.createElement('div');
+		el.setAttribute('data-type', 'markdown');
+
+		// Classes : "textCol [class]" ou "markdown [class]"
+		const extraClass = (options as Record<string, unknown>).class as string || '';
+		const baseClass = type === 'textCol' ? 'textCol' : 'markdown';
+		el.className = [baseClass, extraClass].filter(Boolean).join(' ');
+
+		// Styles CSS vars (cols → --grid-col, fill → --col-fill, alignSelf, etc.)
+		const styles = generateStyles(options);
+		const styleEntries = Object.entries(styles);
+		if (styleEntries.length > 0) {
+			el.setAttribute('style', styleEntries.map(([k, v]) => `${k}: ${v}`).join('; '));
+		}
+
+		const file = this.app.metadataCache.getFirstLinkpathDest(src, '') ||
+		             this.app.vault.getAbstractFileByPath(src);
+
+		if (file instanceof TFile) {
+			const content = await this.app.vault.cachedRead(file);
+			const wrapper = document.createElement('div');
+			wrapper.className = 'content-wrapper';
+			await MarkdownRenderer.render(this.app, content, wrapper, file.path, new Component());
+			el.appendChild(wrapper);
+		} else {
+			el.innerHTML = `<em>Fichier introuvable : ${src}</em>`;
+		}
+
+		return el;
+	}
 
 	render(type: string, params: { src?: string; options: ShortcodeConfig }): HTMLElement | null {
 		if (!SUPPORTED_SHORTCODE_TYPES.includes(type as ShortcodeType)) {

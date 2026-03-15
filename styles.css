@@ -1,245 +1,548 @@
+/* ============================================================
+   Plugin dev_obsidian-11ty — styles.css
+   Approximation visuelle du rendu screen.css de laine (Tufte)
+   Toutes les règles sont scopées aux vues Obsidian ou aux
+   éléments générés par le plugin pour éviter les conflits.
+   ============================================================ */
+
+/* ------------------------------------------------------------ Variables partagées */
 :root {
-  --fontfamily: "Ecole", sans-serif;
-  --bigsize: clamp(2.5rem, calc(1.83rem + 3.33vw), 6rem);
-  --basesize: 1.15rem;
-  --color: rgba(0, 0, 0, 0.85);
-  --spacer: 1rem;
-  --sn-width: 15rem;
-  --accentcolor: black;
-  --maxwidth: 46rem;
+	--gutter: 2rem;
 }
 
-.theme-dark .figure,
-.theme-dark .figcaption {
-  background: unset;
+/* Variables typographiques et de mise en page — scopées à Obsidian */
+:is(.markdown-preview-view, .markdown-source-view) {
+	/* Polices */
+	--heading-font-family: "Georgia", "CrimsonPro", serif;
+	--labeur-font-family: "IBM Plex Sans", system-ui, sans-serif;
+	--caption-font-family: var(--labeur-font-family);
+	--note-font-family: var(--labeur-font-family);
+
+	/* Typographie corps */
+	--labeur-font-size: 14pt;
+	--labeur-line-height: 1.6;
+	--labeur-weight: 400;
+	--labeur-bold-weight: 600;
+
+	/* Typographie titres */
+	--h1-font-size: 2.2em;
+	--h2-font-size: 1.8em;
+	--h3-font-size: 1.4em;
+	--heading-line-height: 1.15;
+	--heading-weight: 400;
+
+	/* Typographie légendes */
+	--caption-font-size: 12pt;
+	--caption-line-height: 1.3;
+	--caption-weight: 300;
+	--caption-bold-weight: 400;
+
+	/* Typographie notes */
+	--note-font-size: 12pt;
+	--note-line-height: 1.3;
+	--note-weight: 400;
+	--note-bold-weight: 500;
+	--note-call-size: var(--note-font-size);
+	--note-call-weight: 700;
+
+	/* Couleurs */
+	--color-text: #111111;
+	--color-background: #ffffff;
+	--accentcolor: rgba(100, 149, 237, 1);
+	--heading-text-color: var(--accentcolor);
+	--note-call-text-color: var(--accentcolor);
+	--caption-text-color: var(--color-text);
+	--note-text-color: var(--color-text);
+	--list-marker-color: var(--color-text);
+
+	/* Mise en page Tufte */
+	--content-width: 55%;
+	--sidenote-width: 30%;
+	--sidenote-offset: -35%;
+	--spacer: 2rem;
+	--list-indent: 2ch;
+	--list-dash-width: 0.8em;
+
+	/* Compteur figures */
+	counter-reset: global-figure;
 }
 
-.theme-light .figure,
-.theme-light .figcaption {
-  background: unset;
+/* Mode sombre Obsidian */
+.theme-dark .markdown-preview-view,
+.theme-dark .markdown-source-view {
+	--color-text: #e8e8e8;
+	--color-background: #1e1e1e;
+	--caption-text-color: var(--color-text);
+	--note-text-color: var(--color-text);
+	--list-marker-color: var(--color-text);
 }
 
-.markdown-source-view,
-.markdown-preview-view {
-  counter-reset: global-figure;
+/* ------------------------------------------------------------ Compteur figures */
+:is(.markdown-preview-view, .markdown-source-view) figure,
+.markdown-source-view figure {
+	counter-increment: global-figure;
 }
 
-.markdown-source-view figure,
-.markdown-preview-view figure {
-  counter-increment: global-figure;
+/* ------------------------------------------------------------ Éléments communs */
+
+:is(.markdown-preview-view, .markdown-source-view) mark,
+.markdown-source-view mark {
+	background: var(--accentcolor);
+	padding: 0 0.15em;
+	color: white;
 }
 
-.block-language-columnGrid,
-.cm-lang-columnGrid {
-  width: calc(
-    ((100vw - var(--file-line-width)) / 2) + var(--file-line-width) -
-      var(--ribbon-width)
-  );
-  position: relative;
-  overflow-x: hidden;
-  padding-right: var(--file-margins);
+:is(.markdown-preview-view, .markdown-source-view) .small-caps,
+:is(.markdown-preview-view, .markdown-source-view) .smallcaps {
+	font-variant-caps: all-small-caps;
+	font-style: inherit;
 }
 
-/* ------------------------------------------------------------------------ Grid container for multiple images */
-.columnGrid {
-  display: grid !important;
-  grid-template-columns: repeat(12, 1fr);
-  grid-gap: var(--spacer);
-  align-content: start;
+:is(.markdown-preview-view, .markdown-source-view) .breakpage,
+:is(.markdown-preview-view, .markdown-source-view) .breakcolumn,
+:is(.markdown-preview-view, .markdown-source-view) .breakprint {
+	display: none;
 }
 
-/* Default 3-column layout for figures in grid */
-.columnGrid .figure,
-.columnGrid .videofigure {
-  grid-column: span 3; /* 3 columns by default */
-  align-self: start;
-  margin: 0;
-  padding: 0;
-  max-width: none;
+/* ------------------------------------------------------------ Textes [data-type="markdown"] */
+
+:is(.markdown-preview-view, .markdown-source-view) [data-type="markdown"] {
+	max-width: 100%;
+	align-self: var(--align-self, start);
 }
 
-/* Allow custom column spans via --col CSS variable */
-.columnGrid .figure,
-.columnGrid .videofigure {
-  grid-column: var(--col, auto) / span var(--width, 3);
+:is(.markdown-preview-view, .markdown-source-view) [data-type="markdown"] * {
+	max-width: 100%;
 }
 
-/* ------------------------------------------------------------------------ Images annexes (template = appendices) */
-
-/* paragraphs, titles, blocquotes within appendices */
-.appendices .content > :not(figure) {
-  grid-column: span 8;
+:is(.markdown-preview-view, .markdown-source-view)
+	[data-type="markdown"]
+	p:last-child {
+	margin-bottom: 0;
 }
 
-/* figures and videofigures default : 3 cols  */
-.videofigure,
-.figure {
-  grid-column: span 3;
-  align-self: start;
-  margin: 0;
-  padding: 0;
-  max-width: none;
+/* Premier enfant */
+.content-wrapper > *:first-child {
+	margin-top: 0;
 }
 
-.figure,
-.videofigure {
-  grid-column: var(--col, auto) / span var(--width, 3);
+/* ------------------------------------------------------------ Figures */
+
+:is(.markdown-preview-view, .markdown-source-view) figure,
+:is(.markdown-preview-view, .markdown-source-view) .figure {
+	margin: 1em 0;
+	max-width: 100%;
+	counter-increment: global-figure;
 }
 
-/* justify image figures at start */
-.figure {
-  justify-self: start;
-}
-.figure img {
-  display: block;
-}
-.videofigure .video {
-  max-width: none;
+:is(.markdown-preview-view, .markdown-source-view) .figure {
+	justify-self: start;
 }
 
-figcaption,
-.figcaption {
-  font-size: var(--font-smallest);
-  padding: 0.5em 0 0;
+:is(.markdown-preview-view, .markdown-source-view) .figure img {
+	display: block;
+	max-width: 100%;
+	height: auto;
 }
 
-html figure .figcaption::before {
-  content: "↑ [fig." counter(global-figure) "] ";
+/* Alignement vertical */
+:is(.markdown-preview-view, .markdown-source-view) .figure.top {
+	align-self: start;
+}
+:is(.markdown-preview-view, .markdown-source-view) .figure.center {
+	align-self: center;
+}
+:is(.markdown-preview-view, .markdown-source-view) .figure.bottom {
+	align-self: end;
+}
+:is(.markdown-preview-view, .markdown-source-view) .figure.screen-top {
+	align-self: start;
+}
+:is(.markdown-preview-view, .markdown-source-view) .figure.screen-center {
+	align-self: center;
+}
+:is(.markdown-preview-view, .markdown-source-view) .figure.screen-bottom {
+	align-self: end;
 }
 
-figcaption:empty {
-  display: none;
+/* Légendes */
+:is(.markdown-preview-view, .markdown-source-view) .figcaption,
+:is(.markdown-preview-view, .markdown-source-view) .figcaption > * {
+	padding: 0.5em 0;
+	display: block;
+	text-indent: 0;
+	text-wrap: pretty;
+	font-family: var(--caption-font-family);
+	font-size: var(--caption-font-size);
+	line-height: var(--caption-line-height);
+	color: var(--caption-text-color);
+	font-weight: var(--caption-weight);
 }
 
-/* largeur et décalage des .figure et .videofigure, uniquement pour la version écran */
-.screen .figure,
-.screen .videofigure {
-  grid-column: var(--col, auto) / span var(--width, 3);
+:is(.markdown-preview-view, .markdown-source-view) .figcaption > *:first-child {
+	padding: 0;
+}
+:is(.markdown-preview-view, .markdown-source-view) .figcaption:empty {
+	display: none;
 }
 
-/* alignement vertical des .figure */
-.figure.top {
-  align-self: start;
-}
-.figure.center {
-  align-self: center;
-}
-.figure.bottom {
-  align-self: end;
+/* :is(.markdown-preview-view, .markdown-source-view) .figcaption::before {
+	content: "↑ [fig." counter(global-figure) "] ";
+} */
+
+:is(.markdown-preview-view, .markdown-source-view) .figcaption strong {
+	font-weight: var(--caption-bold-weight);
 }
 
-@media screen and (max-width: 40rem) {
-  .figure,
-  .videofigure {
-    grid-column: 1 / -1 !important;
-    display: flex;
-    flex-direction: column-reverse;
-  }
-  figcaption::before {
-    content: "↑ [fig." counter(global-figure) "] " !important;
-  }
+/* Figure call (référence inline) */
+:is(.markdown-preview-view, .markdown-source-view) .figure_call {
+	padding-left: 0.25em;
+	font-style: normal;
+	font-weight: bold;
+	letter-spacing: 0.05em;
+	font-size: 0.75em;
+	top: -0.05em;
+	position: relative;
+	text-decoration: none;
 }
 
-/* notwhite has a grey background */
-.notwhite {
-  background: rgba(0, 0, 0, 0.05);
-}
-.notwhite img {
-  mix-blend-mode: multiply;
-}
-.notwhite .caption,
-.notwhite figcaption {
-  background: white;
+/* Fond transparent en dark/light */
+.theme-dark :is(.markdown-preview-view, .markdown-source-view) .figure,
+.theme-dark :is(.markdown-preview-view, .markdown-source-view) .figcaption,
+.theme-light :is(.markdown-preview-view, .markdown-source-view) .figure,
+.theme-light :is(.markdown-preview-view, .markdown-source-view) .figcaption {
+	background: unset;
 }
 
-/* ------------------------------------------------------------------------ Videos */
-.video {
-  max-width: var(--maxwidth);
-  aspect-ratio: 16/9;
-  position: relative;
-  margin: 1em 0;
+/* notwhite */
+:is(.markdown-preview-view, .markdown-source-view) .notwhite {
+	background: rgba(0, 0, 0, 0.05);
 }
-.video[style] {
-  background: var(--poster);
-  background-size: cover;
-}
-.video iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-.video + figcaption {
-  margin-top: -1em;
-}
-.video > * {
-  aspect-ratio: 16 / 9;
-  display: grid;
-  inline-size: 100%;
-  position: relative;
-  background: var(--poster);
-  background-size: cover;
-}
-.video > * > iframe {
-  block-size: 100%;
-  border: 0;
-  border-radius: inherit;
-  inline-size: 100%;
-  inset: 0;
-  object-fit: cover;
-  position: absolute;
-}
-.video iframe:not([src=""]) + button {
-  display: none;
-}
-.video button {
-  background-color: var(--button-bgc, #f00);
-  block-size: var(--button-h, 50px);
-  border: 0;
-  border-radius: var(--button-bdrs, 14%);
-  display: grid;
-  inline-size: var(--button-w, 75px);
-  opacity: var(--button-op, 0.8);
-  position: absolute;
-  place-self: center;
-  transition: all 0.2s ease-in;
-}
-.video button::before {
-  aspect-ratio: 1;
-  background: #fff;
-  block-size: 1.5em;
-  clip-path: polygon(20% 0%, 20% 100%, 100% 50%);
-  content: "";
-  place-self: center;
+:is(.markdown-preview-view, .markdown-source-view) .notwhite img {
+	mix-blend-mode: multiply;
 }
 
-vimeo-embed button {
-  --button-bgc: #00adef;
+/* ------------------------------------------------------------ imagenote */
+
+:is(.markdown-preview-view, .markdown-source-view) .imagenote {
+	float: right;
+	clear: right;
+	width: var(--sidenote-width);
+	margin-right: var(--sidenote-offset);
+	margin-bottom: 1rem;
+	position: relative;
+	font-family: var(--note-font-family);
+	font-size: var(--note-font-size);
+	line-height: var(--note-line-height);
 }
 
-*:has(> .imagenote) {
-  /* styles pour le parent */
-  float: right;
-  clear: right;
+:is(.markdown-preview-view, .markdown-source-view) .imagenote img {
+	display: block;
+	max-width: 100%;
 }
 
-.imagenote {
-  float: right;
-  clear: right;
-  width: 250px;
-  font-size: 0.85rem;
-  margin-right: calc(-250px - var(--spacer));
-  margin-bottom: 1rem;
+:is(.markdown-preview-view, .markdown-source-view) .imagenote .figcaption {
+	padding: 0.5em 0;
+	display: block;
+	text-indent: 0;
+	text-wrap: pretty;
+	font-family: var(--caption-font-family);
+	font-size: var(--caption-font-size);
+	line-height: var(--caption-line-height);
+	color: var(--caption-text-color);
+	font-weight: var(--caption-weight);
 }
 
-.imagenote img {
-  display: block;
+/* ------------------------------------------------------------ columnGrid */
+
+/* Wrapper Obsidian du bloc ```11ty columnGrid */
+.block-language-11ty:has(.columnGrid) {
+	max-width: 100%;
 }
-.imagenote .caption {
-  padding: 0.5em 0;
-  display: block;
-  text-indent: 0;
-  text-wrap: pretty;
+
+:is(.markdown-preview-view, .markdown-source-view) .columnGrid {
+	--g-column-count: 12;
+	--g-column-gutter: var(--gutter, 0mm);
+	display: grid !important;
+	grid-template-columns: repeat(var(--g-column-count), 1fr) !important;
+	grid-gap: var(--gutter) !important;
+	align-content: start;
+	max-width: 100%;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .columnGrid > h2 {
+	position: absolute !important;
+	border: 0 !important;
+	height: 1px !important;
+	width: 1px !important;
+	overflow: hidden !important;
+	clip: rect(0, 0, 0, 0) !important;
+	margin: 0;
+	padding: 0;
+}
+
+:is(.markdown-preview-view, .markdown-source-view)
+	.columnGrid
+	[data-type="markdown"],
+:is(.markdown-preview-view, .markdown-source-view) .columnGrid .videofigure,
+:is(.markdown-preview-view, .markdown-source-view) .columnGrid .figure {
+	grid-column: var(--col, auto) / span var(--width, 12) !important;
+	align-self: var(--align-self, start) !important;
+	margin-top: 0 !important;
+	margin-block-start: 0 !important;
+	margin-bottom: 0 !important;
+	margin-block-end: 0 !important;
+	position: relative;
+	justify-self: stretch;
+	max-width: 100% !important;
+	height: 100%;
+	padding: 0;
+}
+
+:is(.markdown-preview-view, .markdown-source-view)
+	.columnGrid
+	[data-type="markdown"]
+	ul {
+	width: 100%;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .columnGrid .figure,
+:is(.markdown-preview-view, .markdown-source-view) .columnGrid .videofigure {
+	align-self: var(--align-self, start) !important;
+	margin: 0;
+	padding: 0;
+	max-width: none !important;
+}
+
+/* ------------------------------------------------------------ textCol */
+
+:is(.markdown-preview-view, .markdown-source-view) .textCol {
+	--g-column-count: var(--grid-col, 2);
+	--g-column-gutter: var(--grid-col-gutter, var(--gutter));
+	columns: var(--g-column-count) !important;
+	column-gap: var(--g-column-gutter) !important;
+	column-fill: var(--col-fill, auto) !important;
+	width: 100% !important;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .textCol p {
+	font-family: var(--labeur-font-family);
+	font-size: var(--labeur-font-size);
+	line-height: var(--labeur-line-height);
+	break-inside: avoid;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .textCol h2 {
+	column-span: all;
+	font-family: var(--heading-font-family);
+	margin-bottom: 4ch;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .textCol h3 {
+	column-span: all;
+	max-width: 100% !important;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .textCol a {
+	word-break: break-word;
+}
+
+/* ------------------------------------------------------------ gallery */
+
+:is(.markdown-preview-view, .markdown-source-view) .gallery {
+	break-inside: avoid;
+	max-width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .gallery.fullwidth {
+	max-width: 90%;
+	clear: both;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .gallery-grid {
+	display: grid;
+	grid-gap: var(--gutter, 1rem);
+	grid-template-columns: repeat(var(--gallery-columns, 1), 1fr);
+	line-height: 0;
+	align-items: start;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .gallery-item {
+	margin: 0;
+	padding: 0;
+}
+
+:is(.markdown-preview-view, .markdown-source-view)
+	.gallery-item
+	[data-type="markdown"] {
+	max-width: 100%;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .gallery-image .figure {
+	margin: 0;
+	padding: 0;
+	position: relative;
+	aspect-ratio: var(--ratio, 1/1);
+	overflow: hidden;
+	max-width: 100% !important;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .gallery-image img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: var(--fit, cover);
+	object-position: center;
+	display: block;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .gallery-caption {
+	display: block;
+	font-family: var(--caption-font-family);
+	font-size: var(--caption-font-size);
+	line-height: var(--caption-line-height);
+	font-weight: var(--caption-weight);
+	padding-top: 0.5em;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .gallery-markdown {
+	display: flex;
+	align-items: flex-start;
+	justify-content: stretch;
+	width: 100%;
+	height: 100%;
+}
+
+:is(.markdown-preview-view, .markdown-source-view)
+	.gallery-markdown
+	.content-wrapper {
+	width: 100%;
+	height: 100%;
+	font-size: var(--note-font-size);
+	line-height: var(--note-line-height);
+	display: flex;
+	flex-direction: column;
+}
+
+:is(.markdown-preview-view, .markdown-source-view)
+	.gallery-markdown
+	.content-wrapper
+	> *:first-child {
+	margin-top: 0;
+}
+
+/* ------------------------------------------------------------ Vidéo */
+
+:is(.markdown-preview-view, .markdown-source-view) .video {
+	max-width: 100%;
+	aspect-ratio: 16/9;
+	position: relative;
+	margin: 1em 0;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .video[style] {
+	background: var(--poster);
+	background-size: cover;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .video iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	border: none;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .video > * {
+	aspect-ratio: 16/9;
+	display: grid;
+	inline-size: 100%;
+	position: relative;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .video > * > iframe {
+	block-size: 100%;
+	border: 0;
+	inline-size: 100%;
+	inset: 0;
+	object-fit: cover;
+	position: absolute;
+}
+
+/* ------------------------------------------------------------ Listes */
+
+:is(.markdown-preview-view, .markdown-source-view) p + ul,
+:is(.markdown-preview-view, .markdown-source-view) p + ol {
+	margin-top: 0;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) p:has(+ ul),
+:is(.markdown-preview-view, .markdown-source-view) p:has(+ ol) {
+	margin-bottom: 0;
+}
+
+/* ------------------------------------------------------------ Texte */
+
+.text-left,
+.text-left > * {
+	text-align: left;
+	width: 100%;
+}
+.text-right,
+.text-right > * {
+	text-align: right;
+	width: 100%;
+}
+.text-center,
+.text-center > * {
+	text-align: center;
+	width: 100%;
+}
+
+/* ------------------------------------------------------------ Templates spéciaux */
+
+/* Interview */
+:is(.markdown-preview-view, .markdown-source-view) .interview p {
+	--indent: 8em;
+	padding-left: var(--indent);
+}
+
+:is(.markdown-preview-view, .markdown-source-view)
+	.interview
+	:not([data-split-from])
+	strong:first-child {
+	margin-left: calc(var(--indent) * -1);
+	min-width: calc(var(--indent) - 1em);
+	width: 0;
+	position: absolute;
+	text-align: right;
+	padding-right: 1em;
+	text-decoration: underline;
+	font-weight: normal;
+}
+
+/* Glossaire */
+:is(.markdown-preview-view, .markdown-source-view) .glossary {
+	columns: 3;
+	column-gap: var(--spacer);
+	font-size: 0.85em;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .term {
+	break-inside: avoid-column;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .term dl {
+	margin-top: 0;
+}
+:is(.markdown-preview-view, .markdown-source-view) .term dt {
+	font-weight: bold;
+}
+:is(.markdown-preview-view, .markdown-source-view) .term dd {
+	margin-bottom: 1em;
+	margin-left: 0;
 }
