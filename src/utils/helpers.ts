@@ -41,47 +41,70 @@ export function renderMarkdown(text: string): string {
 		.replace(/<br>/g, '<br>');
 }
 
-export function parseShortcodeParams(params: string): { src?: string; options: ShortcodeConfig } {
-	// Nettoyer les sauts de ligne et espaces multiples
-	params = params.replace(/\s+/g, ' ').trim();
-	
-	// Regex plus flexible pour gérer différents formats
-	const match = params.match(/^["']([^"']+)["'](?:\s*,\s*(\{.*\}))?$/) ||
-	              params.match(/^([^,\s]+)(?:\s*,\s*(\{.*\}))?$/);
-	
-	if (!match) {
-		// Fallback: prendre tout avant la première virgule comme src
-		const commaIndex = params.indexOf(',');
-		if (commaIndex > 0) {
-			const src = params.substring(0, commaIndex).trim().replace(/^["']|["']$/g, '');
-			const optionsStr = params.substring(commaIndex + 1).trim();
-			
-			let options: ShortcodeConfig = {};
-			if (optionsStr.startsWith('{')) {
-				try {
-					const cleanOptions = optionsStr.replace(/,(\s*[}\]])/g, '$1');
-					options = Function(`"use strict"; return (${cleanOptions})`)();
-				} catch (e) {
-					console.warn('Erreur parsing options:', e);
-				}
-			}
-			
-			return { src, options };
+// Découpe une chaîne sur les virgules en respectant les guillemets
+function splitRespectingQuotes(str: string): string[] {
+	const parts: string[] = [];
+	let current = '';
+	let inQuotes = false;
+	let quoteChar = '';
+
+	for (let i = 0; i < str.length; i++) {
+		const ch = str[i];
+		if (inQuotes) {
+			if (ch === quoteChar) inQuotes = false;
+			current += ch;
+		} else if (ch === '"' || ch === "'") {
+			inQuotes = true;
+			quoteChar = ch;
+			current += ch;
+		} else if (ch === ',') {
+			parts.push(current);
+			current = '';
+		} else {
+			current += ch;
 		}
-		
-		throw new Error('Format de paramètres invalide');
 	}
+	if (current) parts.push(current);
+	return parts;
+}
 
-	const src = match[1];
-	let options: ShortcodeConfig = {};
+export function parseShortcodeParams(params: string): { src?: string; options: ShortcodeConfig } {
+	// Normaliser les sauts de ligne en espaces
+	const normalized = params.replace(/\s+/g, ' ').trim();
 
-	if (match[2]) {
-		try {
-			const cleanOptions = match[2].replace(/,(\s*[}\]])/g, '$1');
-			options = Function(`"use strict"; return (${cleanOptions})`)();
-		} catch (e) {
-			console.warn('Erreur parsing options:', e);
-			options = {};
+	const parts = splitRespectingQuotes(normalized);
+	let src: string | undefined;
+	const options: ShortcodeConfig = {};
+
+	for (let i = 0; i < parts.length; i++) {
+		const part = parts[i].trim();
+		if (!part) continue;
+
+		// Premier argument positionnel entre guillemets = src
+		if (i === 0 && (part.startsWith('"') || part.startsWith("'"))) {
+			src = part.replace(/^["']|["']$/g, '');
+			continue;
+		}
+
+		// Format legacy : { col: 6, caption: "..." }
+		if (part.startsWith('{')) {
+			try {
+				const joined = parts.slice(i).join(',');
+				const cleanOptions = joined.replace(/,(\s*[}\]])/g, '$1');
+				const parsed = Function(`"use strict"; return (${cleanOptions})`)();
+				Object.assign(options, parsed);
+			} catch (e) {
+				console.warn('Erreur parsing options legacy:', e);
+			}
+			break;
+		}
+
+		// Format 11ty natif : key="value" ou key=number
+		const kvMatch = part.match(/^([\w-]+)\s*=\s*["']?([\s\S]*?)["']?$/);
+		if (kvMatch) {
+			const key = kvMatch[1];
+			const val = kvMatch[2].trim();
+			(options as Record<string, unknown>)[key] = (val !== '' && !isNaN(Number(val))) ? Number(val) : val;
 		}
 	}
 

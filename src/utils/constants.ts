@@ -1,6 +1,8 @@
 import { CssVarMapping } from '../types';
 
 export const CSS_VAR_MAPPING: CssVarMapping = {
+	cols: '--grid-col',
+	colGap: '--grid-col-gutter',
 	col: '--col',
 	printCol: '--print-col',
 	width: '--width',
@@ -8,23 +10,24 @@ export const CSS_VAR_MAPPING: CssVarMapping = {
 	printRow: '--print-row',
 	printHeight: '--print-height',
 	alignSelf: '--align-self',
-	alignself: '--align-self',
-	'align-self': '--align-self',
-	imgX: '--img-x',
-	imgY: '--img-y',
-	imgW: '--img-w',
-	page: '--pagedjs-full-page',
+	fill: '--col-fill',
 };
 
-export const SHORTCODE_REGEX = /\{%\s*(\w+)\s+([^%]+)\s*%\}/g;
+// Supporte multi-lignes et les % dans les valeurs (ex: width="50%")
+export const SHORTCODE_REGEX = /\{%-?\s*(\w+)\s+([\s\S]*?)\s*-?%\}/g;
+
+// Shortcodes appairés : {% gallery %}...{% endgallery %}
+export const PAIRED_SHORTCODE_REGEX = /\{%-?\s*(\w+)\s*([\s\S]*?)-?%\}([\s\S]*?)\{%-?\s*end\1\s*-?%\}/g;
 
 export const SUPPORTED_SHORTCODE_TYPES = [
 	'image',
-	'grid', 
 	'video',
 	'figure',
 	'imagenote',
-	'fullpage'
+	'markdown',
+	'textCol',
+	'gallery',
+	'columnGrid',
 ] as const;
 
 export const MEDIA_TEMPLATES = {
@@ -36,12 +39,6 @@ export const MEDIA_TEMPLATES = {
 	},
 	figure: {
 		template: '<figure id="{id}" data-src="{src}" data-type="{type}" data-grid="image" class="{type} {classes}"{styles}>{media}<figcaption class="figcaption">{caption}</figcaption></figure>'
-	},
-	grid: {
-		template: '<figure id="{id}" data-src="{src}" data-type="{type}" data-grid="image" class="figure {type} {classes}"{styles}>{media}</figure><figcaption class="figcaption"{styles}>{caption}</figcaption>'
-	},
-	fullpage: {
-		template: '<figure id="{id}" data-src="{src}" data-type="{type}" data-grid="image" class="full-page figure {type} {classes}"{styles}>{media}</figure>'
 	},
 	video: {
 		template: '<figure id="{id}" data-type="{type}" data-grid="content" class="video {classes}"{styles}>{media}<figcaption class="figcaption">{caption}</figcaption></figure>'
