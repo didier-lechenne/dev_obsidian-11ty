@@ -22,7 +22,7 @@ export interface ParsedShortcode {
 	options: ShortcodeConfig;
 }
 
-export type ShortcodeType = 'image' | 'video' | 'figure' | 'imagenote' | 'markdown' | 'textCol' | 'gallery' | 'columnGrid';
+export type ShortcodeType = 'image' | 'video' | 'figure' | 'imagenote' | 'markdown' | 'textCol' | 'columnGrid';
 
 export interface CssVarMapping {
 	[key: string]: string;

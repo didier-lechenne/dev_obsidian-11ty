@@ -172,10 +172,9 @@ export class ShortcodeProcessor {
 
 
 
-	processElement(element: HTMLElement, _context: MarkdownPostProcessorContext) {
-		// Ne pas retraiter les éléments déjà rendus par le plugin
-		if (element.closest('[data-type], .content-wrapper, .obsidian-11ty-cm6-widget')) return;
-		this.processNodeRecursively(element);
+	processElement(_element: HTMLElement, _context: MarkdownPostProcessorContext) {
+		// Les shortcodes inline (hors blocs ```11ty) sont du Nunjucks natif pour le build 11ty.
+		// Le plugin ne les traite pas — utiliser des blocs ```11ty pour le rendu Obsidian.
 	}
 
 
@@ -195,8 +194,6 @@ export class ShortcodeProcessor {
 			}
 
 		}
-
-		
 
 		// Traiter les enfants
 

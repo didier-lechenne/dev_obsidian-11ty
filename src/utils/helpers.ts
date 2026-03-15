@@ -72,40 +72,37 @@ export function parseShortcodeParams(params: string): { src?: string; options: S
 	// Normaliser les sauts de ligne en espaces
 	const normalized = params.replace(/\s+/g, ' ').trim();
 
-	const parts = splitRespectingQuotes(normalized);
 	let src: string | undefined;
 	const options: ShortcodeConfig = {};
 
-	for (let i = 0; i < parts.length; i++) {
-		const part = parts[i].trim();
-		if (!part) continue;
+	let remaining = normalized;
 
-		// Premier argument positionnel entre guillemets = src
-		if (i === 0 && (part.startsWith('"') || part.startsWith("'"))) {
-			src = part.replace(/^["']|["']$/g, '');
-			continue;
-		}
+	// Premier argument positionnel entre guillemets = src
+	const srcMatch = remaining.match(/^(["'])(.*?)\1\s*,?\s*/);
+	if (srcMatch) {
+		src = srcMatch[2];
+		remaining = remaining.substring(srcMatch[0].length);
+	}
 
-		// Format legacy : { col: 6, caption: "..." }
-		if (part.startsWith('{')) {
-			try {
-				const joined = parts.slice(i).join(',');
-				const cleanOptions = joined.replace(/,(\s*[}\]])/g, '$1');
-				const parsed = Function(`"use strict"; return (${cleanOptions})`)();
-				Object.assign(options, parsed);
-			} catch (e) {
-				console.warn('Erreur parsing options legacy:', e);
-			}
-			break;
+	// Format legacy : { col: 6, caption: "..." }
+	if (remaining.trimStart().startsWith('{')) {
+		try {
+			const cleanOptions = remaining.replace(/,(\s*[}\]])/g, '$1');
+			const parsed = Function(`"use strict"; return (${cleanOptions})`)();
+			Object.assign(options, parsed);
+		} catch (e) {
+			console.warn('Erreur parsing options legacy:', e);
 		}
+		return { src, options };
+	}
 
-		// Format 11ty natif : key="value" ou key=number
-		const kvMatch = part.match(/^([\w-]+)\s*=\s*["']?([\s\S]*?)["']?$/);
-		if (kvMatch) {
-			const key = kvMatch[1];
-			const val = kvMatch[2].trim();
-			(options as Record<string, unknown>)[key] = (val !== '' && !isNaN(Number(val))) ? Number(val) : val;
-		}
+	// Match toutes les paires key=value (robuste : pas besoin de virgule)
+	const kvRegex = /([\w-]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([\w./%+-]+))?/g;
+	let match;
+	while ((match = kvRegex.exec(remaining)) !== null) {
+		const key = match[1];
+		const val = (match[2] ?? match[3] ?? match[4] ?? '').trim();
+		(options as Record<string, unknown>)[key] = (val !== '' && !isNaN(Number(val))) ? Number(val) : val;
 	}
 
 	return { src, options };
