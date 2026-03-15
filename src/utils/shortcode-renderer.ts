@@ -9,46 +9,19 @@ export class ShortcodeRenderer {
 	constructor(private app: App) {}
 
 	// Rend un shortcode enfant (sync ou async selon le type)
+	// skipClickHandler=true pour les blocs code (Obsidian gère la navigation nativement)
 	private async renderInnerShortcode(innerType: string, innerParams: string): Promise<HTMLElement | null> {
 		const parsedParams = parseShortcodeParams(innerParams.trim());
 		if (innerType === 'markdown' || innerType === 'textCol') {
 			return this.renderMarkdownFile(innerType, parsedParams);
 		}
-		return this.render(innerType, parsedParams);
+		return this.render(innerType, parsedParams, true);
 	}
 
-	// Shortcodes appairés : gallery, columnGrid
+	// Shortcodes appairés : columnGrid
 	async renderPaired(type: string, params: { src?: string; options: ShortcodeConfig }, innerContent: string): Promise<HTMLElement | null> {
 		const { options = {} } = params;
 		const classAttr = (options as Record<string, unknown>).class as string || '';
-
-		if (type === 'gallery') {
-			const figure = document.createElement('figure');
-			figure.setAttribute('data-type', 'gallery');
-			figure.className = `marker gallery${classAttr ? ' ' + classAttr : ''}`;
-
-			const grid = document.createElement('div');
-			grid.className = 'gallery-grid marker';
-
-			const innerRegex = new RegExp(SHORTCODE_REGEX.source, 'g');
-			let match;
-			while ((match = innerRegex.exec(innerContent)) !== null) {
-				const [, innerType, innerParams] = match;
-				try {
-					const el = await this.renderInnerShortcode(innerType, innerParams);
-					if (el) {
-						const item = document.createElement('div');
-						item.className = 'gallery-item';
-						item.appendChild(el);
-						grid.appendChild(item);
-					}
-				} catch (e) {
-					console.warn('Erreur rendu item gallery:', e);
-				}
-			}
-			figure.appendChild(grid);
-			return figure;
-		}
 
 		if (type === 'columnGrid') {
 			const wrapper = document.createElement('div');
@@ -107,7 +80,7 @@ export class ShortcodeRenderer {
 		return el;
 	}
 
-	render(type: string, params: { src?: string; options: ShortcodeConfig }): HTMLElement | null {
+	render(type: string, params: { src?: string; options: ShortcodeConfig }, skipClickHandler = false): HTMLElement | null {
 		if (!SUPPORTED_SHORTCODE_TYPES.includes(type as ShortcodeType)) {
 			console.warn(`Type de shortcode non supporté: ${type}`);
 			return null;
@@ -115,9 +88,9 @@ export class ShortcodeRenderer {
 
 		const { src, options = {} } = params;
 		const config = { src: this.resolveImagePath(src), ...options };
-		
+
 		this.globalElementCounter++;
-		
+
 		const template = MEDIA_TEMPLATES[type as keyof typeof MEDIA_TEMPLATES];
 		if (!template) return null;
 
@@ -134,11 +107,13 @@ export class ShortcodeRenderer {
 		const htmlString = this.renderTemplate(template.template, templateData);
 		const tempDiv = document.createElement('div');
 		tempDiv.innerHTML = htmlString;
-		
+
 		const element = tempDiv.firstElementChild as HTMLElement;
 		if (element) {
-			this.addEditOnClick(element);
-			
+			if (!skipClickHandler) {
+				this.addEditOnClick(element);
+			}
+
 			// Pour grid, gérer la structure multiple
 			if (type === 'grid' && tempDiv.children.length > 1) {
 				const wrapper = document.createElement('div');
@@ -146,7 +121,7 @@ export class ShortcodeRenderer {
 				return wrapper;
 			}
 		}
-		
+
 		return element;
 	}
 

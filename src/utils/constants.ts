@@ -26,7 +26,6 @@ export const SUPPORTED_SHORTCODE_TYPES = [
 	'imagenote',
 	'markdown',
 	'textCol',
-	'gallery',
 	'columnGrid',
 ] as const;
 
