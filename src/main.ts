@@ -1,5 +1,6 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import { ShortcodeProcessor } from './utils/shortcode-processor';
+import { createShortcodeViewPlugin } from './utils/live-preview-plugin';
 
 
 // interface MyPluginSettings {
@@ -29,6 +30,9 @@ export default class Obsidian11tyPlugin extends Plugin {
 		this.registerMarkdownPostProcessor((element, context) => {
 			this.processor.processElement(element, context);
 		});
+
+		// CM6 ViewPlugin pour Live Preview — remplace les blocs ```11ty par des widgets
+		this.registerEditorExtension(createShortcodeViewPlugin(this.processor.getRenderer()));
 	}
 
 	onunload() {
