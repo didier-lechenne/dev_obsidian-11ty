@@ -2,86 +2,63 @@
 
 Un plugin Obsidian qui permet d'utiliser des shortcodes 11ty (Eleventy) directement dans vos notes Markdown et de les prévisualiser en temps réel.
 
-## Fonctionnalités
-
-### Types de shortcodes supportés
-
-- **image** - Images avec options de style avancées
-- **grid** - Grilles d'images avec mise en page personnalisée
-- **video** - Vidéos avec contrôles et poster
-- **figure** - Figures avec légendes
-- **imagenote** - Images flottantes avec annotations
-
-
-### Syntaxes supportées
-
-1. **Syntaxe 11ty classique** (dans code blocks `11ty`)
-```
-    ```11ty
-    {% image "image.jpg", {width: 300, col: 2} %}
-    ```
-```
-
-2. **Code blocks spécifiques** (Live Preview)
-```
-    ```image
-    "image.jpg", {width: 300, caption: "Ma légende"}
-    ```
-```
-
-3. **Shortcodes inline** (Reading View)
-```
-Du texte avec {% image "image.jpg" %} une image intégrée
-```
-
-## Installation
+## Installation via BRAT
 
 1. Installez [BRAT](https://github.com/TfTHacker/obsidian42-brat) depuis la communauté des plugins
-2. Utilisez BRAT pour installer ce plugin depuis son repository GitHub
+2. Dans BRAT, ajoutez le repository : `didier-lechenne/dev_obsidian-11ty`
 3. Activez le plugin dans Paramètres → Plugins communautaires
 
+## Fonctionnalités
 
-## Utilisation
+### Code blocks supportés
 
-### Options disponibles
+| Syntaxe | Description |
+|---|---|
+| ` ```11ty ` | Bloc générique pour tous les shortcodes 11ty |
+| ` ```image ` | Image |
+| ` ```video ` | Vidéo |
+| ` ```figure ` | Figure avec légende |
+| ` ```imagenote ` | Image flottante avec annotation |
+
+### Composants disponibles dans un bloc `11ty`
+
+- **columnGrid** — grille de mise en page (12 colonnes)
+- **sc-gallery** — galerie d'images
+- **textCol** — texte en colonnes
+- **imagenote** — image flottante en marge
+
+### Commandes
+
+- **Toggle grid markers** — affiche/masque les repères de grille (Ctrl+P → "Toggle grid markers")
+
+## Syntaxe
+
+### Bloc 11ty générique
+```
+```11ty
+{% image "image.jpg", {width: 6, caption: "**Ma légende**"} %}
+```
+```
+
+### Bloc spécifique (Live Preview)
+```
+```image
+"image.jpg", {width: 6, caption: "Ma légende"}
+```
+```
+
+## Options
 
 ```javascript
 {
-  width: 3,                     // Largeur
-  col: 2,                       // Position 
-  printCol: 1,                  // Position impression
-  printWidth: 1,                // Largeur 
-  printRow: 2,                  // Ligne impression
-  printHeight: 3,               // Hauteur impression
-  alignSelf: "bottom",          // Alignement vertical
-  imgX: 0,                      // Position X de l'image
-  imgY: 0,                      // Position Y de l'image
-  imgW: 0,                      // Largeur de l'image
-  page: "full",                 // Page complète
-  caption: "**Ma légende**",    // Légende (Markdown supporté)
-  class: "myClass",             // Classes CSS
+  width: 6,                     // Largeur (colonnes)
+  col: 1,                       // Position (colonne de départ)
+  alignSelf: "start",           // Alignement vertical : start | center | end
+  caption: "**Légende**",       // Légende (Markdown supporté)
+  class: "myClass",             // Classes CSS supplémentaires
   poster: "poster.jpg"          // Poster pour vidéos
 }
 ```
-
-
-
-### Exemples
-
-#### Image simple
-```
-    ```11ty
-    {% image "photos/paysage.jpg", {width: 12, caption: "**Ma légende**"} %}
-    ```
-```
-
-#### Grille d'images
-```
-    ```grid
-    {% grid "photos/paysage.jpg", {width: 12, caption: "**Ma légende**"} %}
-    ```
-```
-
 
 ## Structure du projet
 
@@ -96,9 +73,6 @@ src/
     └── shortcode-renderer.ts   # Moteur de rendu
 ```
 
-
-
 ## Compatibilité
 
 - Obsidian 0.15.0+
-
