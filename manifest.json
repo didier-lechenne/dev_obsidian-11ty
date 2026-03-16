@@ -3,9 +3,8 @@
 	"name": "obsidian-11ty",
 	"version": "1.1.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "Un plugin pour 11ty",
+	"author": "Didier Lechenne",
+	"authorUrl": "https://lechenne.fr",
 	"isDesktopOnly": false
 }
