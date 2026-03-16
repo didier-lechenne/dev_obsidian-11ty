@@ -10,15 +10,9 @@ Un plugin Obsidian qui permet d'utiliser des shortcodes 11ty (Eleventy) directem
 
 ## Fonctionnalités
 
-### Code blocks supportés
+### Code block
 
-| Syntaxe | Description |
-|---|---|
-| ` ```11ty ` | Bloc générique pour tous les shortcodes 11ty |
-| ` ```image ` | Image |
-| ` ```video ` | Vidéo |
-| ` ```figure ` | Figure avec légende |
-| ` ```imagenote ` | Image flottante avec annotation |
+Utiliser le bloc ` ```11ty ` pour tous les shortcodes.
 
 ### Composants disponibles dans un bloc `11ty`
 
