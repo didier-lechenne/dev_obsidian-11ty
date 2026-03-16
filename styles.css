@@ -33,7 +33,15 @@
 	width: 90% !important;
 }
 
-.markdown-preview-view.is-readable-line-width .markdown-preview-sizer * {
+.markdown-preview-view.is-readable-line-width .markdown-preview-sizer p,
+.markdown-preview-view.is-readable-line-width .markdown-preview-sizer ol,
+.markdown-preview-view.is-readable-line-width .markdown-preview-sizer ul,
+.markdown-preview-view.is-readable-line-width
+	.markdown-preview-sizer
+	blockquote,
+.markdown-preview-view.is-readable-line-width
+	.markdown-preview-sizer
+	.block-language-11ty {
 	width: 55%;
 }
 
