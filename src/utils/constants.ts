@@ -27,6 +27,7 @@ export const SUPPORTED_SHORTCODE_TYPES = [
 	'markdown',
 	'textCol',
 	'columnGrid',
+	'gallery',
 ] as const;
 
 export const MEDIA_TEMPLATES = {
