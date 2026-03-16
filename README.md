@@ -27,17 +27,9 @@ Utiliser le bloc ` ```11ty ` pour tous les shortcodes.
 
 ## Syntaxe
 
-### Bloc 11ty générique
 ```
 ```11ty
 {% image "image.jpg", {width: 6, caption: "**Ma légende**"} %}
-```
-```
-
-### Bloc spécifique (Live Preview)
-```
-```image
-"image.jpg", {width: 6, caption: "Ma légende"}
 ```
 ```
 
@@ -45,9 +37,21 @@ Utiliser le bloc ` ```11ty ` pour tous les shortcodes.
 
 ```javascript
 {
-  width: 6,                     // Largeur (colonnes)
-  col: 1,                       // Position (colonne de départ)
+  // Mise en page écran
+  width: 6,                     // Largeur (colonnes) → --width
+  col: 1,                       // Position (colonne de départ) → --col
+  cols: 2,                      // Nb colonnes (textCol) → --grid-col
+  colGap: "2rem",               // Espacement colonnes → --grid-col-gutter
   alignSelf: "start",           // Alignement vertical : start | center | end
+  fill: "auto",                 // Remplissage colonnes (textCol) → --col-fill
+
+  // Mise en page impression (pagedjs)
+  printCol: 1,                  // Position colonne impression → --print-col
+  printWidth: 6,                // Largeur impression → --print-width
+  printRow: 1,                  // Ligne impression → --print-row
+  printHeight: 3,               // Hauteur impression → --print-height
+
+  // Contenu
   caption: "**Légende**",       // Légende (Markdown supporté)
   class: "myClass",             // Classes CSS supplémentaires
   poster: "poster.jpg"          // Poster pour vidéos
