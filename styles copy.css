@@ -10,6 +10,54 @@
 	--gutter: 2rem;
 }
 
+/* ------------------------------------------------------------ Layout Tufte */
+.markdown-source-view.is-live-preview,
+.markdown-preview-view {
+	--file-line-width: 1400px;
+}
+
+/* Aperçu en direct */
+.markdown-source-view.is-live-preview .cm-line,
+.markdown-source-view.is-live-preview .cm-content,
+.markdown-source-view.is-live-preview .cm-preview-code-block {
+	width: 55%;
+}
+
+.markdown-source-view.is-live-preview .cm-preview-code-block:has(.fullwidth) {
+	width: 90% !important;
+}
+
+/* Aperçu (Lecture) */
+.markdown-preview-view.is-readable-line-width .markdown-preview-sizer {
+	max-width: 1400px !important;
+	width: 90% !important;
+}
+
+.markdown-preview-view.is-readable-line-width .markdown-preview-sizer p,
+.markdown-preview-view.is-readable-line-width .markdown-preview-sizer ol,
+.markdown-preview-view.is-readable-line-width .markdown-preview-sizer ul,
+.markdown-preview-view.is-readable-line-width
+	.markdown-preview-sizer
+	blockquote,
+.markdown-preview-view.is-readable-line-width
+	.markdown-preview-sizer
+	.block-language-11ty {
+	width: 55%;
+}
+
+.markdown-preview-view.is-readable-line-width
+	.markdown-preview-sizer
+	.block-language-11ty
+	* {
+	width: 100%;
+}
+
+.markdown-preview-view.is-readable-line-width
+	.markdown-preview-sizer
+	.block-language-11ty:has(.fullwidth) {
+	width: 90% !important;
+}
+
 /* Variables typographiques et de mise en page — scopées à Obsidian */
 :is(.markdown-preview-view, .markdown-source-view) {
 	/* Polices */
@@ -77,84 +125,20 @@
 	--list-marker-color: var(--color-text);
 }
 
-.markdown-source-view.mod-cm6 .edit-block-button {
-	background-color: var(--interactive-accent) !important;
-	color: white;
-}
-/* .markdown-source-view.mod-cm6 .edit-block-button:hover {
-	background-color: var(--interactive-accent) !important;
-} */
-
-/* ------------------------------------------------------------ Layout Tufte */
-.markdown-source-view.is-live-preview,
-.markdown-preview-view {
-	--file-line-width: 1400px;
-}
-
-/* Aperçu en direct */
-.markdown-source-view.is-live-preview
-	:is(.cm-line, .cm-content, .cm-preview-code-block) {
-	width: 55%;
-}
-
-.markdown-source-view.is-live-preview .cm-preview-code-block:has(.fullwidth) {
-	width: 90% !important;
-}
-
-/* Aperçu (Lecture) */
-.markdown-preview-view.is-readable-line-width .markdown-preview-sizer {
-	max-width: 1400px !important;
-	width: 90% !important;
-}
-
-.markdown-preview-view.is-readable-line-width
-	.markdown-preview-sizer
-	:is(p, ol, ul, blockquote) {
-	width: 55%;
-}
-
-.markdown-preview-view.is-readable-line-width
-	.markdown-preview-sizer
-	.block-language-11ty {
-	width: 55%;
-}
-
-.markdown-preview-view.is-readable-line-width
-	.markdown-preview-sizer
-	.block-language-11ty:has(.fullwidth) {
-	width: 90% !important;
-}
-
-.markdown-preview-view.is-readable-line-width
-	.markdown-preview-sizer
-	.block-language-11ty
-	* {
-	width: 100%;
-}
-
-/* ------------ Textes [data-type="markdown"] */
-
-:is(.markdown-preview-view, .markdown-source-view) [data-type="markdown"] {
-	/* max-width: 100%; */
-	align-self: var(--align-self, start);
-}
-
-/* :is(.markdown-preview-view, .markdown-source-view) [data-type="markdown"] * {
-	max-width: 100%;
-} */
-
-:is(.markdown-preview-view, .markdown-source-view)
-	[data-type="markdown"]
-	p:last-child {
-	margin-bottom: 0;
-}
-
-/* Premier enfant */
-.content-wrapper > *:first-child {
-	margin-top: 0;
+/* ------------------------------------------------------------ Compteur figures */
+:is(.markdown-preview-view, .markdown-source-view) figure,
+.markdown-source-view figure {
+	counter-increment: global-figure;
 }
 
 /* ------------------------------------------------------------ Éléments communs */
+
+:is(.markdown-preview-view, .markdown-source-view) mark,
+.markdown-source-view mark {
+	background: var(--accentcolor);
+	padding: 0 0.15em;
+	color: white;
+}
 
 :is(.markdown-preview-view, .markdown-source-view) .small-caps,
 :is(.markdown-preview-view, .markdown-source-view) .smallcaps {
@@ -168,34 +152,26 @@
 	display: none;
 }
 
-/* ------------------------------------------------------------ Listes */
+/* ------------ Textes [data-type="markdown"] */
 
-:is(.markdown-preview-view, .markdown-source-view) p + ul,
-:is(.markdown-preview-view, .markdown-source-view) p + ol {
-	margin-top: 0;
+:is(.markdown-preview-view, .markdown-source-view) [data-type="markdown"] {
+	max-width: 100%;
+	align-self: var(--align-self, start);
 }
 
-:is(.markdown-preview-view, .markdown-source-view) p:has(+ ul),
-:is(.markdown-preview-view, .markdown-source-view) p:has(+ ol) {
+:is(.markdown-preview-view, .markdown-source-view) [data-type="markdown"] * {
+	max-width: 100%;
+}
+
+:is(.markdown-preview-view, .markdown-source-view)
+	[data-type="markdown"]
+	p:last-child {
 	margin-bottom: 0;
 }
 
-/* ------------------------------------------------------------ Texte */
-
-.text-left,
-.text-left > * {
-	text-align: left;
-	width: 100%;
-}
-.text-right,
-.text-right > * {
-	text-align: right;
-	width: 100%;
-}
-.text-center,
-.text-center > * {
-	text-align: center;
-	width: 100%;
+/* Premier enfant */
+.content-wrapper > *:first-child {
+	margin-top: 0;
 }
 
 /* --------------- Figures */
@@ -204,6 +180,10 @@
 :is(.markdown-preview-view, .markdown-source-view) .figure {
 	margin: 1em 0;
 	max-width: 100%;
+	counter-increment: global-figure;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) .figure {
 	justify-self: start;
 }
 
@@ -214,16 +194,22 @@
 }
 
 /* Alignement vertical */
-:is(.markdown-preview-view, .markdown-source-view)
-	.figure:is(.top, .screen-top) {
+:is(.markdown-preview-view, .markdown-source-view) .figure.top {
 	align-self: start;
 }
-:is(.markdown-preview-view, .markdown-source-view)
-	.figure:is(.center, .screen-center) {
+:is(.markdown-preview-view, .markdown-source-view) .figure.center {
 	align-self: center;
 }
-:is(.markdown-preview-view, .markdown-source-view)
-	.figure:is(.bottom, .screen-bottom) {
+:is(.markdown-preview-view, .markdown-source-view) .figure.bottom {
+	align-self: end;
+}
+:is(.markdown-preview-view, .markdown-source-view) .figure.screen-top {
+	align-self: start;
+}
+:is(.markdown-preview-view, .markdown-source-view) .figure.screen-center {
+	align-self: center;
+}
+:is(.markdown-preview-view, .markdown-source-view) .figure.screen-bottom {
 	align-self: end;
 }
 
@@ -234,11 +220,26 @@
 	display: block;
 	text-indent: 0;
 	text-wrap: pretty;
+	/* font-family: var(--caption-font-family); */
 	font-size: var(--caption-font-size);
+	/* line-height: var(--caption-line-height); */
+	/* color: var(--caption-text-color); */
+	/* font-weight: var(--caption-weight); */
 }
 
 :is(.markdown-preview-view, .markdown-source-view) .figcaption > *:first-child {
 	padding: 0;
+}
+:is(.markdown-preview-view, .markdown-source-view) .figcaption:empty {
+	display: none;
+}
+
+/* :is(.markdown-preview-view, .markdown-source-view) .figcaption::before {
+	content: "↑ [fig." counter(global-figure) "] ";
+} */
+
+:is(.markdown-preview-view, .markdown-source-view) .figcaption strong {
+	/* font-weight: var(--caption-bold-weight); */
 }
 
 /* Figure call (référence inline) */
@@ -302,14 +303,15 @@
 
 /* ------------------------------------------------------------ sc-gallery */
 
+/* Wrapper Obsidian du bloc ```11ty gallery */
+.block-language-11ty:has(.sc-gallery) {
+	max-width: 100%;
+}
+
 :is(.markdown-preview-view, .markdown-source-view) .sc-gallery {
 	--gallery-ratio: 4/3;
 	--gallery-fit: contain;
 	--gallery-crop: contain;
-	--g-column-count: var(--gallery-columns, 1);
-	--g-column-gutter: var(--gutter, 0mm);
-	--g-row-count: 1;
-	--g-row-gutter: 0px;
 	display: grid;
 	grid-template-columns: repeat(var(--gallery-columns, 2), minmax(0, 1fr));
 	column-gap: var(--gutter, 1rem);
@@ -358,9 +360,6 @@
 :is(.markdown-preview-view, .markdown-source-view) .columnGrid {
 	--g-column-count: 12;
 	--g-column-gutter: var(--gutter, 0mm);
-	--g-row-count: 1;
-	--g-row-gutter: 0px;
-
 	display: grid !important;
 	grid-template-columns: repeat(var(--g-column-count), 1fr) !important;
 	grid-gap: var(--gutter) !important;
@@ -415,11 +414,8 @@
 /* ------------------------------------------------------------ textCol */
 
 :is(.markdown-preview-view, .markdown-source-view) .textCol {
-	--g-row-count: 1;
-	--g-row-gutter: 0px;
 	--g-column-count: var(--grid-col, 2);
 	--g-column-gutter: var(--grid-col-gutter, var(--gutter));
-
 	columns: var(--g-column-count) !important;
 	column-gap: var(--g-column-gutter) !important;
 	column-fill: var(--col-fill, auto) !important;
@@ -427,17 +423,21 @@
 }
 
 :is(.markdown-preview-view, .markdown-source-view) .textCol p {
+	/* font-family: var(--labeur-font-family); */
+	/* font-size: var(--labeur-font-size); */
+	/* line-height: var(--labeur-line-height); */
 	break-inside: avoid;
 }
 
-:is(.markdown-preview-view, .markdown-source-view) .textCol :is(h2, h3) {
+:is(.markdown-preview-view, .markdown-source-view) .textCol h2 {
 	column-span: all;
+	/* font-family: var(--heading-font-family); */
+	margin-bottom: 4ch;
 }
 
-:is(.markdown-preview-view, .markdown-source-view)
-	.textCol
-	:is(h2 + p, h3 + p) {
-	margin-top: 0 !important;
+:is(.markdown-preview-view, .markdown-source-view) .textCol h3 {
+	column-span: all;
+	max-width: 100% !important;
 }
 
 :is(.markdown-preview-view, .markdown-source-view) .textCol a {
@@ -483,6 +483,36 @@
 	position: absolute;
 }
 
+/* ------------------------------------------------------------ Listes */
+
+:is(.markdown-preview-view, .markdown-source-view) p + ul,
+:is(.markdown-preview-view, .markdown-source-view) p + ol {
+	margin-top: 0;
+}
+
+:is(.markdown-preview-view, .markdown-source-view) p:has(+ ul),
+:is(.markdown-preview-view, .markdown-source-view) p:has(+ ol) {
+	margin-bottom: 0;
+}
+
+/* ------------------------------------------------------------ Texte */
+
+.text-left,
+.text-left > * {
+	text-align: left;
+	width: 100%;
+}
+.text-right,
+.text-right > * {
+	text-align: right;
+	width: 100%;
+}
+.text-center,
+.text-center > * {
+	text-align: center;
+	width: 100%;
+}
+
 /* ------------------------------------------------------------ Templates spéciaux */
 
 /* Interview */
@@ -525,132 +555,4 @@
 :is(.markdown-preview-view, .markdown-source-view) .term dd {
 	margin-bottom: 1em;
 	margin-left: 0;
-}
-
-/*! grid */
-/*!
-* Pure CSS Responsive Grid Overlay
-* README: https://github.com/larsenwork/Pure-CSS-Responsive-Grid-Overlay
-*/
-
-:root {
-	--g-color-line: hsla(16, 100%, 50%, 0.3);
-	--g-color-column: hsla(16, 100%, 50%, 0);
-	--g-color-gutter: hsla(16, 100%, 50%, 0.02);
-	--g-color-baseline: hsla(16, 100%, 50%, 0.1);
-	--g-color-row: hsla(16, 100%, 50%, 0);
-	--color-marginBox: #0000ff;
-}
-
-@media (prefers-color-scheme: dark) {
-	:root:not([data-theme="light"]) {
-		--g-color-line: hsla(16, 100%, 70%, 0.4);
-		--g-color-column: hsla(16, 100%, 70%, 0);
-		--g-color-gutter: hsla(16, 100%, 70%, 0.04);
-		--g-color-baseline: hsla(16, 100%, 70%, 0.15);
-		--g-color-row: hsla(16, 100%, 70%, 0);
-		--color-marginBox: #4444ff;
-	}
-}
-
-/* Mode sombre forcé via bouton ◐ */
-html[data-theme="dark"] {
-	--g-color-line: hsla(16, 100%, 70%, 0.4);
-	--g-color-column: hsla(16, 100%, 70%, 0);
-	--g-color-gutter: hsla(16, 100%, 70%, 0.04);
-	--g-color-baseline: hsla(16, 100%, 70%, 0.15);
-	--g-color-row: hsla(16, 100%, 70%, 0);
-	--color-marginBox: #4444ff;
-}
-
-.no-marker .marker,
-.no-marker .textCol,
-.no-marker .gallery-grid {
-	--g-color-line: hsla(16, 100%, 50%, 0);
-	outline: 0px solid var(--g-color-line) !important;
-}
-
-.no-marker .marker::before,
-.no-marker .textCol::before,
-.no-marker .gallery-grid::before {
-	background-image: none !important;
-}
-
-.pagedjs_area {
-	outline: 1px solid var(--g-color-line) !important;
-	outline-offset: -1px;
-}
-
-.textCol,
-.gallery-grid,
-.marker {
-	position: relative;
-
-	/* Baseline */
-	--g-baseline-height: 8px;
-	--g-baseline-start: 0px;
-
-	/* Media Query String */
-	--g-media_query: "Base";
-
-	/* Gradient Helpers */
-	--line-thickness: 1px;
-
-	--column-start: 0;
-	--column-start-line: var(--line-thickness);
-	--column-end: calc(
-		(100% / var(--g-column-count)) - var(--g-column-gutter) -
-			var(--line-thickness)
-	);
-	--column-end-line: calc(
-		(100% / var(--g-column-count)) - var(--g-column-gutter)
-	);
-	--column-gutter-end: calc(100% / var(--g-column-count));
-
-	--row-start: 0;
-	--row-start-line: var(--line-thickness);
-	--row-end: calc(
-		(100% / var(--g-row-count, 1)) - var(--g-row-gutter) -
-			var(--line-thickness)
-	);
-	--row-end-line: calc((100% / var(--g-row-count, 1)) - var(--g-row-gutter));
-	--row-gutter-end: calc(100% / var(--g-row-count, 1));
-
-	/* Gradients */
-	--g-gradient-column: repeating-linear-gradient(
-		to right,
-		var(--g-color-line) var(--column-start),
-		var(--g-color-line) var(--column-start-line),
-		var(--g-color-column) var(--column-start-line),
-		var(--g-color-column) var(--column-end),
-		var(--g-color-line) var(--column-end),
-		var(--g-color-line) var(--column-end-line),
-		var(--g-color-gutter) var(--column-end-line),
-		var(--g-color-gutter) var(--column-gutter-end)
-	);
-
-	--g-gradient-row: repeating-linear-gradient(
-		to bottom,
-		var(--g-color-line) var(--row-start),
-		var(--g-color-line) var(--row-start-line),
-		var(--g-color-row) var(--row-start-line),
-		var(--g-color-row) var(--row-end),
-		var(--g-color-line) var(--row-end),
-		var(--g-color-line) var(--row-end-line),
-		var(--g-color-gutter) var(--row-end-line),
-		var(--g-color-gutter) var(--row-gutter-end)
-	);
-}
-
-.textCol::before,
-.gallery-grid::before,
-.marker::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	pointer-events: none;
-	z-index: 9999;
-	background-image: var(--g-gradient-row), var(--g-gradient-column);
-	background-size: 100% calc(100% + var(--g-row-gutter)),
-		calc(100% + var(--g-column-gutter)) 100%;
 }

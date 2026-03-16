@@ -30,6 +30,15 @@ export default class Obsidian11tyPlugin extends Plugin {
 			this.processor.processElement(element, context);
 		});
 
+		// Toggle grid markers
+		this.addCommand({
+			id: 'toggle-grid-markers',
+			name: 'Toggle grid markers',
+			callback: () => {
+				document.body.classList.toggle('no-marker');
+			}
+		});
+
 	}
 
 	onunload() {
