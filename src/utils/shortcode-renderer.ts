@@ -18,7 +18,7 @@ export class ShortcodeRenderer {
 		return this.render(innerType, parsedParams, true);
 	}
 
-	// Shortcodes appairés : columnGrid
+	// Shortcodes appairés : columnGrid, gallery
 	async renderPaired(type: string, params: { src?: string; options: ShortcodeConfig }, innerContent: string): Promise<HTMLElement | null> {
 		const { options = {} } = params;
 		const classAttr = (options as Record<string, unknown>).class as string || '';
@@ -37,6 +37,54 @@ export class ShortcodeRenderer {
 				} catch (e) {
 					console.warn('Erreur rendu item columnGrid:', e);
 				}
+			}
+			return wrapper;
+		}
+
+		if (type === 'gallery') {
+			const wrapper = document.createElement('div');
+			wrapper.className = `marker sc-gallery${classAttr ? ' ' + classAttr : ''}`;
+
+			const ratio = (options as Record<string, unknown>).ratio as string || '';
+			const fit = (options as Record<string, unknown>).fit as string || '';
+			const crop = (options as Record<string, unknown>).crop;
+			const columns = (options as Record<string, unknown>).columns as string || '';
+
+			if (ratio) wrapper.style.setProperty('--gallery-ratio', ratio);
+			if (fit) wrapper.style.setProperty('--gallery-fit', fit);
+			if (crop !== undefined && crop !== '' && crop !== 'false' && crop !== false)
+				wrapper.style.setProperty('--gallery-crop', 'cover');
+			if (columns) wrapper.style.setProperty('--gallery-columns', String(columns));
+
+			const innerRegex = new RegExp(SHORTCODE_REGEX.source, 'g');
+			let match;
+			let itemCount = 0;
+			while ((match = innerRegex.exec(innerContent)) !== null) {
+				const [, innerType, innerParams] = match;
+				try {
+					const el = await this.renderInnerShortcode(innerType, innerParams);
+					if (el) {
+						const item = document.createElement('div');
+						item.className = 'sc-gallery-item';
+						item.appendChild(el);
+						wrapper.appendChild(item);
+						itemCount++;
+					}
+				} catch (e) {
+					console.warn('Erreur rendu item gallery:', e);
+				}
+			}
+			// Set columns to item count if not explicitly specified
+			if (!columns && itemCount > 0) {
+				wrapper.style.setProperty('--gallery-columns', String(itemCount));
+			}
+			// Title as figcaption at the end
+			const title = params.src || '';
+			if (title) {
+				const caption = document.createElement('figcaption');
+				caption.className = 'sc-gallery-caption figcaption';
+				caption.textContent = title;
+				wrapper.appendChild(caption);
 			}
 			return wrapper;
 		}

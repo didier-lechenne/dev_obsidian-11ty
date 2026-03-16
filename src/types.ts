@@ -14,6 +14,10 @@ export interface ShortcodeConfig {
 	alignSelf?: string;
 	fill?: string;
 	poster?: string; // Pour les vidéos
+	ratio?: string; // Pour gallery
+	fit?: string;   // Pour gallery
+	crop?: string | boolean; // Pour gallery
+	columns?: number | string; // Pour gallery
 }
 
 export interface ParsedShortcode {
@@ -22,7 +26,7 @@ export interface ParsedShortcode {
 	options: ShortcodeConfig;
 }
 
-export type ShortcodeType = 'image' | 'video' | 'figure' | 'imagenote' | 'markdown' | 'textCol' | 'columnGrid';
+export type ShortcodeType = 'image' | 'video' | 'figure' | 'imagenote' | 'markdown' | 'textCol' | 'columnGrid' | 'gallery';
 
 export interface CssVarMapping {
 	[key: string]: string;
