@@ -5,7 +5,7 @@ Un plugin Obsidian qui permet d'utiliser des shortcodes 11ty (Eleventy) directem
 ## Installation via BRAT
 
 1. Installez [BRAT](https://github.com/TfTHacker/obsidian42-brat) depuis la communauté des plugins
-2. Dans BRAT, ajoutez le repository : `didier-lechenne/dev_obsidian-11ty`
+2. Dans BRAT, ajoutez le repository : `didier-lechenne/obsidian-11ty`
 3. Activez le plugin dans Paramètres → Plugins communautaires
 
 ## Fonctionnalités
