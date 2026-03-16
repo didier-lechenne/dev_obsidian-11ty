@@ -10,6 +10,46 @@
 	--gutter: 2rem;
 }
 
+/* ------------------------------------------------------------ Layout Tufte */
+.markdown-source-view.is-live-preview,
+.markdown-preview-view {
+	--file-line-width: 1400px;
+}
+
+/* Aperçu en direct */
+.markdown-source-view.is-live-preview .cm-line,
+.markdown-source-view.is-live-preview .cm-content,
+.markdown-source-view.is-live-preview .cm-preview-code-block {
+	width: 55%;
+}
+
+.markdown-source-view.is-live-preview .cm-preview-code-block:has(.fullwidth) {
+	width: 90% !important;
+}
+
+/* Aperçu (Lecture) */
+.markdown-preview-view.is-readable-line-width .markdown-preview-sizer {
+	max-width: 1400px !important;
+	width: 90% !important;
+}
+
+.markdown-preview-view.is-readable-line-width .markdown-preview-sizer * {
+	width: 55%;
+}
+
+.markdown-preview-view.is-readable-line-width
+	.markdown-preview-sizer
+	.block-language-11ty
+	* {
+	width: 100%;
+}
+
+.markdown-preview-view.is-readable-line-width
+	.markdown-preview-sizer
+	.block-language-11ty:has(.fullwidth) {
+	width: 90% !important;
+}
+
 /* Variables typographiques et de mise en page — scopées à Obsidian */
 :is(.markdown-preview-view, .markdown-source-view) {
 	/* Polices */
@@ -172,11 +212,11 @@
 	display: block;
 	text-indent: 0;
 	text-wrap: pretty;
-	font-family: var(--caption-font-family);
+	/* font-family: var(--caption-font-family); */
 	font-size: var(--caption-font-size);
-	line-height: var(--caption-line-height);
-	color: var(--caption-text-color);
-	font-weight: var(--caption-weight);
+	/* line-height: var(--caption-line-height); */
+	/* color: var(--caption-text-color); */
+	/* font-weight: var(--caption-weight); */
 }
 
 :is(.markdown-preview-view, .markdown-source-view) .figcaption > *:first-child {
@@ -191,7 +231,7 @@
 } */
 
 :is(.markdown-preview-view, .markdown-source-view) .figcaption strong {
-	font-weight: var(--caption-bold-weight);
+	/* font-weight: var(--caption-bold-weight); */
 }
 
 /* Figure call (référence inline) */
@@ -231,9 +271,9 @@
 	margin-right: var(--sidenote-offset);
 	margin-bottom: 1rem;
 	position: relative;
-	font-family: var(--note-font-family);
-	font-size: var(--note-font-size);
-	line-height: var(--note-line-height);
+	/* font-family: var(--note-font-family); */
+	/* font-size: var(--note-font-size); */
+	/* line-height: var(--note-line-height); */
 }
 
 :is(.markdown-preview-view, .markdown-source-view) .imagenote img {
@@ -246,9 +286,9 @@
 	display: block;
 	text-indent: 0;
 	text-wrap: pretty;
-	font-family: var(--caption-font-family);
+	/* font-family: var(--caption-font-family); */
 	font-size: var(--caption-font-size);
-	line-height: var(--caption-line-height);
+	/* line-height: var(--caption-line-height); */
 	color: var(--caption-text-color);
 	font-weight: var(--caption-weight);
 }
@@ -375,15 +415,15 @@
 }
 
 :is(.markdown-preview-view, .markdown-source-view) .textCol p {
-	font-family: var(--labeur-font-family);
-	font-size: var(--labeur-font-size);
-	line-height: var(--labeur-line-height);
+	/* font-family: var(--labeur-font-family); */
+	/* font-size: var(--labeur-font-size); */
+	/* line-height: var(--labeur-line-height); */
 	break-inside: avoid;
 }
 
 :is(.markdown-preview-view, .markdown-source-view) .textCol h2 {
 	column-span: all;
-	font-family: var(--heading-font-family);
+	/* font-family: var(--heading-font-family); */
 	margin-bottom: 4ch;
 }
 
