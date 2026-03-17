@@ -24,6 +24,26 @@ export default class Obsidian11tyPlugin extends Plugin {
 			this.processor.processElement(element, context);
 		});
 
+		// Appliquer template comme classe CSS sur la vue
+		this.registerEvent(
+			this.app.workspace.on('file-open', (file) => {
+				if (!file) return;
+				const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+				if (!view) return;
+				const meta = this.app.metadataCache.getFileCache(file);
+				const template = meta?.frontmatter?.template;
+				const el = view.contentEl;
+				const prev = el.dataset.template;
+				if (prev) el.classList.remove(prev);
+				if (template) {
+					el.classList.add(template);
+					el.dataset.template = template;
+				} else {
+					delete el.dataset.template;
+				}
+			})
+		);
+
 		// Toggle grid markers
 		this.addCommand({
 			id: 'toggle-grid-markers',
